@@ -12,11 +12,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // Admin
+        \App\Models\User::create([
+            'name' => 'Admin Kecamatan',
+            'email' => 'admin@cikampek.go.id',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Peserta Dummy
+        \App\Models\User::create([
+            'name' => 'Budi Santoso',
+            'email' => 'budi@example.com',
+            'nis_nim' => '12345678',
+            'password' => bcrypt('password'),
+            'role' => 'peserta',
+            'sekolah_universitas' => 'SMKN 1 Cikampek',
+            'jurusan' => 'Rekayasa Perangkat Lunak',
+            'no_hp' => '081234567890',
+            'divisi' => 'IT Support',
+            'pembimbing' => 'Bapak Ahmad',
+            'tgl_mulai' => now()->format('Y-m-d'),
+            'tgl_selesai' => now()->addMonths(3)->format('Y-m-d'),
+            'status_aktif' => 'aktif',
+        ]);
+
+        // Pengaturan Default
+        \App\Models\Pengaturan::create([
+            'nama_kantor' => 'Kantor Kecamatan Cikampek',
+            'latitude_kantor' => '-6.4025',
+            'longitude_kantor' => '107.4589',
+            'radius_meter' => 100,
+        ]);
     }
 }
