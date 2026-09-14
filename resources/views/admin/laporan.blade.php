@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan - Admin')
+@section('title', 'Laporan Presensi - Admin SIAP PKL')
 
 @section('content')
 <div class="admin-layout">
-    <!-- Sidebar -->
+    {{-- Sidebar --}}
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="ph ph-buildings"></i>
@@ -31,7 +31,8 @@
         <div style="padding: 1rem;">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-outline w-100" style="justify-content: flex-start; border: none; color: var(--danger);">
+                <button type="submit" class="btn btn-outline w-100"
+                    style="justify-content: flex-start; border: none; color: var(--danger);">
                     <i class="ph ph-sign-out"></i>
                     <span>Logout</span>
                 </button>
@@ -39,66 +40,111 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    {{-- Main Content --}}
     <div class="admin-main">
         <div class="admin-header">
-            <h2 class="font-bold">Laporan Absensi</h2>
+            <div>
+                <h2 class="font-bold">Laporan Presensi</h2>
+                <p class="text-secondary" style="font-size: 0.8rem;">Rekap kehadiran peserta PKL per bulan</p>
+            </div>
         </div>
 
         <div class="admin-content">
-            <div class="card mb-4">
-                <form action="" method="GET" class="d-flex align-center gap-4">
-                    <div class="form-group mb-0 flex-1">
-                        <label class="form-label">Periode Bulan</label>
-                        <input type="month" name="bulan" class="form-control" value="{{ request('bulan', date('Y-m')) }}">
-                    </div>
-                    <div class="form-group mb-0 flex-1">
-                        <label class="form-label">Instansi / Sekolah</label>
-                        <select name="sekolah" class="form-control">
-                            <option value="">Semua Instansi</option>
-                            <option value="SMKN 1 Cikampek">SMKN 1 Cikampek</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-0" style="margin-top: 1.75rem;">
-                        <button type="submit" class="btn btn-primary"><i class="ph ph-funnel"></i> Filter</button>
-                    </div>
-                    <div class="form-group mb-0" style="margin-top: 1.75rem;">
-                        <button type="button" class="btn btn-success"><i class="ph ph-export"></i> Export Excel</button>
-                    </div>
+
+            {{-- Filter Bulan --}}
+            <div class="card mb-4" style="padding: 1.25rem 1.5rem;">
+                <form method="GET" action="{{ route('admin.laporan') }}"
+                    style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <label style="font-weight: 600; font-size: 0.875rem; color: #475569; flex-shrink: 0;">Filter Bulan:</label>
+                    <input type="month" name="bulan" value="{{ $bulan }}"
+                        class="form-control" style="width: auto; min-width: 180px; padding: 0.5rem 0.875rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">
+                        <i class="ph ph-funnel"></i> Tampilkan
+                    </button>
+                    <span class="text-secondary" style="font-size: 0.82rem;">
+                        Menampilkan: <strong>{{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->locale('id')->isoFormat('MMMM YYYY') }}</strong>
+                    </span>
                 </form>
             </div>
 
-            <div class="card">
+            {{-- Tabel Laporan --}}
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="font-bold" style="font-size: 1rem;">
+                        Rekap Kehadiran — {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->locale('id')->isoFormat('MMMM YYYY') }}
+                    </h3>
+                    <span class="badge badge-info">{{ count($data) }} peserta</span>
+                </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Nama Peserta</th>
-                                <th>Instansi</th>
-                                <th>Hadir</th>
-                                <th>Izin</th>
-                                <th>Sakit</th>
-                                <th>Alpa</th>
-                                <th>Persentase</th>
+                                <th>No</th>
+                                <th>Peserta</th>
+                                <th>Divisi</th>
+                                <th style="text-align: center; color: #059669;">Hadir</th>
+                                <th style="text-align: center; color: #D97706;">Izin</th>
+                                <th style="text-align: center; color: #DC2626;">Sakit</th>
+                                <th style="text-align: center; color: #64748B;">Alpa</th>
+                                <th style="text-align: center;">% Kehadiran</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Contoh Data dummy -->
+                            @forelse($data as $i => $item)
+                            @php
+                                $persen = $item['total'] > 0
+                                    ? round(($item['hadir'] / $item['total']) * 100)
+                                    : 0;
+                                $warnaBar = $persen >= 80 ? '#22c55e' : ($persen >= 60 ? '#f59e0b' : '#ef4444');
+                            @endphp
                             <tr>
-                                <td>Budi Santoso</td>
-                                <td>SMKN 1 Cikampek</td>
-                                <td>20</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>0</td>
+                                <td style="color: #94A3B8; font-size: 0.8rem;">{{ $i + 1 }}</td>
                                 <td>
-                                    <span class="badge badge-success">95%</span>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #1D4ED8, #3B82F6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;">
+                                            {{ substr($item['peserta']->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold" style="font-size: 0.875rem;">{{ $item['peserta']->name }}</div>
+                                            <div class="text-secondary" style="font-size: 0.72rem;">{{ $item['peserta']->nis_nim }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="font-size: 0.82rem; color: #475569;">{{ $item['peserta']->divisi ?? '-' }}</td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #059669; font-size: 1rem;">{{ $item['hadir'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #D97706; font-size: 1rem;">{{ $item['izin'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #DC2626; font-size: 1rem;">{{ $item['sakit'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #64748B; font-size: 1rem;">{{ $item['alpa'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                                        <div style="width: 60px; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden;">
+                                            <div style="height: 100%; width: {{ $persen }}%; background: {{ $warnaBar }}; border-radius: 3px;"></div>
+                                        </div>
+                                        <span style="font-weight: 700; font-size: 0.82rem; color: {{ $warnaBar }};">{{ $persen }}%</span>
+                                    </div>
                                 </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary" style="padding: 2.5rem;">
+                                    <i class="ph ph-chart-bar" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+                                    Tidak ada data peserta untuk ditampilkan.
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

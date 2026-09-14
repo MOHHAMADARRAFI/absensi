@@ -32,6 +32,7 @@ class User extends Authenticatable
         'tgl_selesai',
         'status_aktif',
         'foto_profil',
+        'face_descriptor',
     ];
 
     /**

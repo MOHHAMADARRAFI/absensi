@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Absensi;
 use App\Models\Pengaturan;
 use App\Models\Pengajuan;
+use Illuminate\Support\Facades\Log;
 
 class PesertaController extends Controller
 {
@@ -19,32 +20,73 @@ class PesertaController extends Controller
 
         $pengaturan = Pengaturan::first();
 
-        return view('peserta.dashboard', compact('user', 'absensiHariIni', 'pengaturan'));
+        // Statistik kehadiran bulan ini
+        $bulanIni = now()->format('Y-m');
+        $totalHadir = Absensi::where('user_id', $user->id)
+            ->where('status', 'hadir')
+            ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+            ->count();
+        $totalIzin = Absensi::where('user_id', $user->id)
+            ->whereIn('status', ['izin', 'sakit'])
+            ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
+            ->count();
+
+        return view('peserta.dashboard', compact('user', 'absensiHariIni', 'pengaturan', 'totalHadir', 'totalIzin'));
     }
 
     public function absenForm(Request $request)
     {
+        $user = Auth::user();
         $type = $request->query('type', 'masuk');
         $pengaturan = Pengaturan::first();
-        return view('peserta.absen', compact('type', 'pengaturan'));
+
+        $absensiHariIni = Absensi::where('user_id', $user->id)
+            ->whereDate('tanggal', now()->format('Y-m-d'))
+            ->first();
+
+        return view('peserta.absen', compact('type', 'pengaturan', 'user', 'absensiHariIni'));
+    }
+
+    /**
+     * Endpoint untuk mengambil face descriptor milik user yang sedang login.
+     * Backend menentukan user dari Auth::user(), BUKAN dari input frontend.
+     * Descriptor dikirim ke frontend hanya untuk proses perbandingan wajah,
+     * dan hanya pada saat sesi presensi aktif.
+     */
+    public function getDescriptor(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->face_descriptor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Wajah Anda belum terdaftar. Silakan hubungi Admin untuk melakukan registrasi wajah.',
+                'not_registered' => true,
+            ], 200);
+        }
+
+        // Kembalikan descriptor milik user yang login (bukan user lain)
+        return response()->json([
+            'success' => true,
+            'descriptor' => json_decode($user->face_descriptor),
+        ]);
     }
 
     public function absenMasuk(Request $request)
     {
         $user = Auth::user();
-        $pengaturan = Pengaturan::first();
-        
+
+        // Validasi wajah sudah dilakukan di frontend (face_verified=true dari JS)
+        // Backend memvalidasi ulang: user harus punya face descriptor
+        if (!$user->face_descriptor) {
+            return back()->with('error', 'Wajah Anda belum terdaftar. Silakan hubungi Admin.');
+        }
+
         $request->validate([
-            'latitude' => 'required',
-            'longitude' => 'required',
-            'jarak' => 'required|numeric',
             'foto' => 'required',
         ]);
 
-        if ($request->jarak > ($pengaturan->radius_meter ?? 100)) {
-            return back()->with('error', 'Anda berada di luar area absensi!');
-        }
-
+        // Cek sudah absen masuk hari ini
         $absensi = Absensi::where('user_id', $user->id)
             ->whereDate('tanggal', now()->format('Y-m-d'))
             ->first();
@@ -53,13 +95,23 @@ class PesertaController extends Controller
             return back()->with('error', 'Anda sudah melakukan absen masuk hari ini.');
         }
 
-        // Save Base64 Image
-        $imageParts = explode(";base64,", $request->foto);
-        $imageTypeAux = explode("image/", $imageParts[0]);
-        $imageType = $imageTypeAux[1];
-        $imageBase64 = base64_decode($imageParts[1]);
-        $fileName = 'absen/' . $user->id . '_masuk_' . time() . '.' . $imageType;
-        \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageBase64);
+        // Validasi foto base64 basic
+        if (!str_contains($request->foto, 'base64,')) {
+            return back()->with('error', 'Data foto tidak valid.');
+        }
+
+        // Simpan foto
+        try {
+            $imageParts = explode(";base64,", $request->foto);
+            $imageTypeAux = explode("image/", $imageParts[0]);
+            $imageType = $imageTypeAux[1] ?? 'jpeg';
+            $imageBase64 = base64_decode($imageParts[1]);
+            $fileName = 'absen/' . $user->id . '_masuk_' . time() . '.' . $imageType;
+            \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageBase64);
+        } catch (\Exception $e) {
+            Log::error('Gagal simpan foto absen masuk: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan foto. Silakan coba lagi.');
+        }
 
         if (!$absensi) {
             $absensi = new Absensi();
@@ -67,61 +119,72 @@ class PesertaController extends Controller
             $absensi->tanggal = now()->format('Y-m-d');
         }
 
-        $absensi->jam_masuk = now()->format('H:i:s');
+        $pengaturan = Pengaturan::first();
+        $jamMasuk = now()->format('H:i:s');
+        $jamBatas = $pengaturan->jam_masuk_batas ?? '08:00:00';
+
+        $absensi->jam_masuk = $jamMasuk;
         $absensi->status = 'hadir';
-        $absensi->lat_masuk = $request->latitude;
-        $absensi->long_masuk = $request->longitude;
-        $absensi->jarak_masuk = $request->jarak;
         $absensi->foto_masuk = $fileName;
+        // Kosongkan field GPS (tidak digunakan)
+        $absensi->lat_masuk = null;
+        $absensi->long_masuk = null;
+        $absensi->jarak_masuk = null;
         $absensi->save();
 
-        return back()->with('success', 'Absen masuk berhasil disimpan!');
+        Log::info("Absen masuk berhasil: User {$user->id} ({$user->name}) jam {$jamMasuk}");
+
+        return back()->with('success', 'Absen masuk berhasil dicatat pada pukul ' . date('H:i', strtotime($jamMasuk)) . ' WIB.');
     }
 
     public function absenPulang(Request $request)
     {
         $user = Auth::user();
-        $pengaturan = Pengaturan::first();
-        
+
+        if (!$user->face_descriptor) {
+            return back()->with('error', 'Wajah Anda belum terdaftar. Silakan hubungi Admin.');
+        }
+
         $request->validate([
-            'latitude' => 'required',
-            'longitude' => 'required',
-            'jarak' => 'required|numeric',
             'foto' => 'required',
         ]);
-
-        if ($request->jarak > ($pengaturan->radius_meter ?? 100)) {
-            return back()->with('error', 'Anda berada di luar area absensi!');
-        }
 
         $absensi = Absensi::where('user_id', $user->id)
             ->whereDate('tanggal', now()->format('Y-m-d'))
             ->first();
 
         if (!$absensi || !$absensi->jam_masuk) {
-            return back()->with('error', 'Anda belum melakukan absen masuk.');
+            return back()->with('error', 'Anda belum melakukan absen masuk hari ini.');
         }
 
         if ($absensi->jam_pulang) {
             return back()->with('error', 'Anda sudah melakukan absen pulang hari ini.');
         }
 
-        // Save Base64 Image
-        $imageParts = explode(";base64,", $request->foto);
-        $imageTypeAux = explode("image/", $imageParts[0]);
-        $imageType = $imageTypeAux[1];
-        $imageBase64 = base64_decode($imageParts[1]);
-        $fileName = 'absen/' . $user->id . '_pulang_' . time() . '.' . $imageType;
-        \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageBase64);
+        // Simpan foto
+        try {
+            $imageParts = explode(";base64,", $request->foto);
+            $imageTypeAux = explode("image/", $imageParts[0]);
+            $imageType = $imageTypeAux[1] ?? 'jpeg';
+            $imageBase64 = base64_decode($imageParts[1]);
+            $fileName = 'absen/' . $user->id . '_pulang_' . time() . '.' . $imageType;
+            \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageBase64);
+        } catch (\Exception $e) {
+            Log::error('Gagal simpan foto absen pulang: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan foto. Silakan coba lagi.');
+        }
 
-        $absensi->jam_pulang = now()->format('H:i:s');
-        $absensi->lat_pulang = $request->latitude;
-        $absensi->long_pulang = $request->longitude;
-        $absensi->jarak_pulang = $request->jarak;
+        $jamPulang = now()->format('H:i:s');
+        $absensi->jam_pulang = $jamPulang;
+        $absensi->lat_pulang = null;
+        $absensi->long_pulang = null;
+        $absensi->jarak_pulang = null;
         $absensi->foto_pulang = $fileName;
         $absensi->save();
 
-        return back()->with('success', 'Absen pulang berhasil disimpan!');
+        Log::info("Absen pulang berhasil: User {$user->id} ({$user->name}) jam {$jamPulang}");
+
+        return back()->with('success', 'Absen pulang berhasil dicatat pada pukul ' . date('H:i', strtotime($jamPulang)) . ' WIB.');
     }
 
     public function izinSakitForm()
@@ -157,7 +220,7 @@ class PesertaController extends Controller
             'status' => 'menunggu',
         ]);
 
-        return redirect()->route('peserta.dashboard')->with('success', 'Pengajuan berhasil dikirim dan menunggu persetujuan.');
+        return redirect()->route('peserta.dashboard')->with('success', 'Pengajuan berhasil dikirim dan menunggu persetujuan Admin.');
     }
 
     public function riwayat(Request $request)
