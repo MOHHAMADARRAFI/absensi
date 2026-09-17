@@ -7,9 +7,7 @@
     
     <!-- Branding -->
     <div class="auth-brand text-center" style="z-index: 10; margin-bottom: 1rem;">
-        <div style="background-color: #1AC073; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
-            <i class="ph ph-graduation-cap" style="color: white; font-size: 20px;"></i>
-        </div>
+
         <h1 style="color: #ffffff; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.15rem;">SIAP PKL</h1>
         <p class="subtitle" style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; font-weight: 400; margin-bottom: 0;">Sistem Informasi Absensi & Penilaian PKL</p>
     </div>
