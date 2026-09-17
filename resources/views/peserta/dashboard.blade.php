@@ -16,12 +16,15 @@
             $sisaHari = now()->startOfDay()->diffInDays($tglSelesai) + 1;
         }
     }
-
     $hadir = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'hadir')->count();
     $izin = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'izin')->count();
     $sakit = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'sakit')->count();
+    $alpa = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'alpa')->count();
     
-    $persentase = $totalHari > 0 ? round(($hadir / $totalHari) * 100) : 0;
+    $totalDataAbsen = $hadir + $izin + $sakit + $alpa;
+    $totalHari = $totalDataAbsen; // Use actual recorded days so far instead of estimated total duration
+
+    $persentase = $totalDataAbsen > 0 ? round(($hadir / $totalDataAbsen) * 100) : 0;
     if($persentase > 100) $persentase = 100;
     
     $durasi = '--';
@@ -34,52 +37,7 @@
 @endphp
 <div class="student-dashboard">
     <!-- Sidebar -->
-    <div class="student-sidebar">
-        <div class="student-brand">
-            <div class="student-brand-mark">
-                <i class="ph ph-map-pin-line"></i>
-            </div>
-            <div>
-                <strong>SIAP PKL</strong>
-                <span>Kec. Cikampek</span>
-            </div>
-        </div>
-
-        <nav class="student-nav">
-            <a href="{{ route('peserta.dashboard') }}" class="student-nav-item active">
-                <i class="ph ph-squares-four"></i>
-                Dashboard
-            </a>
-            <a href="{{ route('peserta.riwayat') }}" class="student-nav-item">
-                <i class="ph ph-clock-counter-clockwise"></i>
-                Riwayat Presensi
-            </a>
-        </nav>
-
-        <div class="sidebar-illustration">
-            <img src="{{ asset('img/sidebar-ill.png') }}" alt="Ilustrasi Kecamatan Cikampek">
-        </div>
-
-        <div class="student-sidebar-footer">
-            <div class="student-mini-profile">
-                @if($user->foto_profil)
-                    <img src="{{ asset('storage/' . $user->foto_profil) }}" class="avatar" alt="Foto">
-                @else
-                    <div class="avatar">{{ substr($user->name, 0, 1) }}</div>
-                @endif
-                <div>
-                    <strong>{{ $user->name }}</strong>
-                    <span>Peserta PKL</span>
-                </div>
-            </div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="student-logout" title="Keluar">
-                    <i class="ph ph-sign-out"></i>
-                </button>
-            </form>
-        </div>
-    </div>
+    @include('peserta.partials.sidebar')
 
     <!-- Main Content -->
     <div class="student-main">
@@ -261,16 +219,7 @@
                 <!-- Right Column -->
                 <div class="dash-col-side">
                     
-                    <!-- Verifikasi Lokasi -->
-                    <div class="section-title">Verifikasi Lokasi</div>
-                    <div class="modern-card location-card mb-4">
-                        <div class="loc-icon"><i class="ph ph-map-pin"></i></div>
-                        <div class="loc-status">
-                            <span class="status-badge badge-gray"><i class="ph ph-warning-circle"></i> Lokasi belum diverifikasi</span>
-                        </div>
-                        <p>Fitur verifikasi lokasi sedang dalam tahap pengembangan.</p>
-                        <button class="btn-outline-loc" disabled>Lihat Lokasi</button>
-                    </div>
+
 
                     <!-- Ringkasan Kehadiran -->
                     <div class="section-title">Ringkasan Kehadiran</div>

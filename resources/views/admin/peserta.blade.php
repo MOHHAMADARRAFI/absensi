@@ -3,67 +3,37 @@
 @section('title', 'Data Peserta - Admin SIAP PKL')
 
 @section('content')
-<div class="admin-layout">
+<div class="student-dashboard">
     {{-- Sidebar --}}
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="ph ph-buildings"></i>
-            <span>SIAP PKL</span>
-        </div>
-        <div class="sidebar-nav">
-            <a href="{{ route('admin.dashboard') }}" class="sidebar-item">
-                <i class="ph ph-squares-four"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ route('admin.peserta') }}" class="sidebar-item active">
-                <i class="ph ph-users"></i>
-                <span>Data Peserta</span>
-            </a>
-            <a href="{{ route('admin.pengajuan') }}" class="sidebar-item">
-                <i class="ph ph-envelope-open"></i>
-                <span>Pengajuan</span>
-            </a>
-            <a href="{{ route('admin.laporan') }}" class="sidebar-item">
-                <i class="ph ph-file-text"></i>
-                <span>Laporan</span>
-            </a>
-        </div>
-        <div style="padding: 1rem;">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline w-100"
-                    style="justify-content: flex-start; border: none; color: var(--danger);">
-                    <i class="ph ph-sign-out"></i>
-                    <span>Logout</span>
-                </button>
-            </form>
-        </div>
-    </div>
+    @include('admin.partials.sidebar')
 
     {{-- Main Content --}}
-    <div class="admin-main">
-        <div class="admin-header">
+    <div class="student-main">
+        <div class="student-topbar">
             <div>
-                <h2 class="font-bold">Data Peserta PKL</h2>
-                <p class="text-secondary" style="font-size: 0.875rem; margin-top: 2px;">
-                    Total: {{ $peserta->count() }} peserta |
-                    <span style="color: var(--success);">{{ $peserta->whereNotNull('face_descriptor')->count() }} terdaftar wajah</span>
-                    @if($peserta->whereNull('face_descriptor')->count() > 0)
-                    | <span style="color: var(--warning);">{{ $peserta->whereNull('face_descriptor')->count() }} belum terdaftar</span>
-                    @endif
-                </p>
+                <div class="student-eyebrow">Manajemen</div>
+                <h1 style="font-size: 1.25rem; font-weight: 800; color: #1E293B; letter-spacing: -0.02em;">Data Peserta PKL</h1>
+            </div>
+            <div class="student-date">
+                <i class="ph ph-calendar-blank"></i>
+                <span class="font-semibold">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
             </div>
         </div>
 
-        @if(session('success'))
-        <div class="alert-success mb-4" style="padding: 0.875rem 1rem; border-radius: 8px; background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="ph ph-check-circle"></i>
-            {{ session('success') }}
-        </div>
-        @endif
+        <div class="student-content">
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: white; border: 1px solid #E2E8F0; border-radius: 12px; display: inline-block; font-size: 0.875rem; color: #475569;">
+                <strong>Statistik Peserta:</strong> 
+                Total {{ $peserta->count() }} orang
+            </div>
 
-        <div class="admin-content">
-            <div class="card" style="padding: 0; overflow: hidden;">
+            @if(session('success'))
+            <div class="alert-success mb-4" style="padding: 0.875rem 1rem; border-radius: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                <i class="ph ph-check-circle" style="font-size: 1.25rem;"></i>
+                {{ session('success') }}
+            </div>
+            @endif
+
+            <div class="modern-card p-0" style="overflow: hidden;">
                 <div class="table-container">
                     <table>
                         <thead>
@@ -72,7 +42,7 @@
                                 <th>Instansi / Jurusan</th>
                                 <th>Divisi</th>
                                 <th>Periode PKL</th>
-                                <th>Status Wajah</th>
+
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -104,13 +74,7 @@
                                     <span class="text-secondary" style="font-size: 0.8rem;">-</span>
                                     @endif
                                 </td>
-                                <td>
-                                    @if($p->face_descriptor)
-                                        <span class="badge badge-success">Terdaftar</span>
-                                    @else
-                                        <span class="badge badge-warning">Belum Terdaftar</span>
-                                    @endif
-                                </td>
+
                                 <td>
                                     @if($p->status_aktif == 'aktif')
                                         <span class="badge badge-success">Aktif</span>
@@ -120,24 +84,14 @@
                                 </td>
                                 <td>
                                     <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                                        <a href="{{ route('admin.peserta.registrasi_wajah', $p->id) }}"
-                                            class="btn btn-primary"
-                                            style="padding: 0.35rem 0.65rem; font-size: 0.78rem; gap: 0.3rem;">
-                                            <i class="ph ph-scan-smiley"></i>
-                                            {{ $p->face_descriptor ? 'Perbarui Wajah' : 'Daftarkan Wajah' }}
+
+                                        <a href="{{ route('admin.peserta.edit', $p->id) }}"
+                                            class="btn"
+                                            style="padding: 0.35rem 0.65rem; font-size: 0.78rem; gap: 0.3rem; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;">
+                                            <i class="ph ph-pencil-simple"></i>
+                                            Edit
                                         </a>
-                                        @if($p->face_descriptor)
-                                        <form action="{{ route('admin.peserta.hapus_wajah', $p->id) }}" method="POST"
-                                            onsubmit="return confirm('Hapus data wajah {{ $p->name }}? Peserta tidak bisa presensi sampai wajah didaftarkan ulang.')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn"
-                                                style="padding: 0.35rem 0.65rem; font-size: 0.78rem; gap: 0.3rem; background: #FEF2F2; color: #ef4444; border: 1px solid #FCA5A5;">
-                                                <i class="ph ph-trash"></i>
-                                                Hapus Wajah
-                                            </button>
-                                        </form>
-                                        @endif
+
                                     </div>
                                 </td>
                             </tr>

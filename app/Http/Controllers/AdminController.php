@@ -24,18 +24,9 @@ class AdminController extends Controller
             ->whereDate('tanggal', now()->format('Y-m-d'))
             ->get();
 
-        // Jumlah peserta yang sudah terdaftar wajah
-        $terdaftarWajah = User::where('role', 'peserta')
-            ->whereNotNull('face_descriptor')
-            ->count();
-
-        $belumTerdaftarWajah = User::where('role', 'peserta')
-            ->whereNull('face_descriptor')
-            ->count();
-
         return view('admin.dashboard', compact(
             'totalPeserta', 'hadirHariIni', 'izinHariIni', 'sakitHariIni',
-            'absensiHariIni', 'terdaftarWajah', 'belumTerdaftarWajah'
+            'absensiHariIni'
         ));
     }
 
@@ -43,6 +34,39 @@ class AdminController extends Controller
     {
         $peserta = User::where('role', 'peserta')->orderBy('name')->get();
         return view('admin.peserta', compact('peserta'));
+    }
+
+    public function editPeserta($id)
+    {
+        $peserta = User::where('role', 'peserta')->findOrFail($id);
+        return view('admin.peserta_edit', compact('peserta'));
+    }
+
+    public function updatePeserta(Request $request, $id)
+    {
+        $peserta = User::where('role', 'peserta')->findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nis_nim' => 'nullable|string|max:255',
+            'sekolah_universitas' => 'nullable|string|max:255',
+            'jurusan' => 'nullable|string|max:255',
+            'divisi' => 'nullable|string|max:255',
+            'tgl_mulai' => 'nullable|date',
+            'tgl_selesai' => 'nullable|date|after_or_equal:tgl_mulai',
+        ]);
+
+        $peserta->update([
+            'name' => $request->name,
+            'nis_nim' => $request->nis_nim,
+            'sekolah_universitas' => $request->sekolah_universitas,
+            'jurusan' => $request->jurusan,
+            'divisi' => $request->divisi,
+            'tgl_mulai' => $request->tgl_mulai,
+            'tgl_selesai' => $request->tgl_selesai,
+        ]);
+
+        return redirect()->route('admin.peserta')->with('success', 'Data peserta berhasil diperbarui.');
     }
 
     public function pengajuan()
@@ -86,16 +110,30 @@ class AdminController extends Controller
         return back()->with('success', 'Status pengajuan berhasil diperbarui.');
     }
 
-    public function laporan()
+    private function getLaporanData($tipeFilter, $filterValue)
     {
         $peserta = User::where('role', 'peserta')->orderBy('name')->get();
-        $bulan = request('bulan', now()->format('Y-m'));
-
         $data = [];
+
         foreach ($peserta as $p) {
-            $absensi = Absensi::where('user_id', $p->id)
-                ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulan])
-                ->get();
+            $query = Absensi::where('user_id', $p->id);
+
+            if ($tipeFilter == 'hari') {
+                $query->whereDate('tanggal', $filterValue);
+            } elseif ($tipeFilter == 'minggu') {
+                if (preg_match('/^(\d{4})-W(\d{2})$/', $filterValue, $matches)) {
+                    $year = $matches[1];
+                    $week = $matches[2];
+                    $startOfWeek = \Carbon\Carbon::now()->setISODate($year, $week)->startOfWeek()->format('Y-m-d');
+                    $endOfWeek = \Carbon\Carbon::now()->setISODate($year, $week)->endOfWeek()->format('Y-m-d');
+                    $query->whereBetween('tanggal', [$startOfWeek, $endOfWeek]);
+                }
+            } else {
+                // default bulan
+                $query->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$filterValue]);
+            }
+
+            $absensi = $query->get();
 
             $data[] = [
                 'peserta' => $p,
@@ -106,74 +144,26 @@ class AdminController extends Controller
                 'total' => $absensi->count(),
             ];
         }
-
-        return view('admin.laporan', compact('data', 'bulan', 'peserta'));
+        return $data;
     }
 
-    /**
-     * Tampilkan halaman registrasi wajah untuk peserta tertentu.
-     * Hanya bisa diakses oleh Admin.
-     */
-    public function registrasiWajahForm($id)
+    public function laporan(Request $request)
     {
-        $peserta = User::where('role', 'peserta')->findOrFail($id);
-        return view('admin.registrasi_wajah', compact('peserta'));
+        $tipeFilter = $request->input('tipe_filter', 'bulan');
+        $filterValue = $request->input('filter_value', now()->format('Y-m'));
+
+        $data = $this->getLaporanData($tipeFilter, $filterValue);
+        
+        return view('admin.laporan', compact('data', 'tipeFilter', 'filterValue'));
     }
 
-    /**
-     * Simpan face descriptor dari frontend ke database.
-     * Descriptor diterima sebagai JSON array 128 nilai.
-     * Hanya Admin yang bisa menyimpan descriptor untuk peserta.
-     */
-    public function simpanWajah(Request $request, $id)
+    public function cetakLaporan(Request $request)
     {
-        $request->validate([
-            'face_descriptor' => 'required|string',
-        ]);
+        $tipeFilter = $request->input('tipe_filter', 'bulan');
+        $filterValue = $request->input('filter_value', now()->format('Y-m'));
 
-        $peserta = User::where('role', 'peserta')->findOrFail($id);
+        $data = $this->getLaporanData($tipeFilter, $filterValue);
 
-        // Validasi format descriptor — harus berupa JSON array 128 angka
-        $descriptor = json_decode($request->face_descriptor);
-        if (!is_array($descriptor) || count($descriptor) !== 128) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data wajah tidak valid. Pastikan wajah terdeteksi dengan baik.',
-            ], 422);
-        }
-
-        // Validasi semua elemen adalah angka
-        foreach ($descriptor as $val) {
-            if (!is_numeric($val)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Format data wajah tidak valid.',
-                ], 422);
-            }
-        }
-
-        $peserta->face_descriptor = json_encode($descriptor);
-        $peserta->save();
-
-        Log::info("Face descriptor berhasil disimpan untuk peserta: {$peserta->id} ({$peserta->name})");
-
-        return response()->json([
-            'success' => true,
-            'message' => "Wajah {$peserta->name} berhasil didaftarkan.",
-        ]);
-    }
-
-    /**
-     * Hapus face descriptor peserta.
-     */
-    public function hapusWajah($id)
-    {
-        $peserta = User::where('role', 'peserta')->findOrFail($id);
-        $peserta->face_descriptor = null;
-        $peserta->save();
-
-        Log::info("Face descriptor dihapus untuk peserta: {$peserta->id} ({$peserta->name})");
-
-        return back()->with('success', "Data wajah {$peserta->name} berhasil dihapus.");
+        return view('admin.laporan_cetak', compact('data', 'tipeFilter', 'filterValue'));
     }
 }

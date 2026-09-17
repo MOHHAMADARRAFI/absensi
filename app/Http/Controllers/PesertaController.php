@@ -47,40 +47,9 @@ class PesertaController extends Controller
         return view('peserta.absen', compact('type', 'pengaturan', 'user', 'absensiHariIni'));
     }
 
-    /**
-     * Endpoint untuk mengambil face descriptor milik user yang sedang login.
-     * Backend menentukan user dari Auth::user(), BUKAN dari input frontend.
-     * Descriptor dikirim ke frontend hanya untuk proses perbandingan wajah,
-     * dan hanya pada saat sesi presensi aktif.
-     */
-    public function getDescriptor(Request $request)
-    {
-        $user = Auth::user();
-
-        if (!$user->face_descriptor) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wajah Anda belum terdaftar. Silakan hubungi Admin untuk melakukan registrasi wajah.',
-                'not_registered' => true,
-            ], 200);
-        }
-
-        // Kembalikan descriptor milik user yang login (bukan user lain)
-        return response()->json([
-            'success' => true,
-            'descriptor' => json_decode($user->face_descriptor),
-        ]);
-    }
-
     public function absenMasuk(Request $request)
     {
         $user = Auth::user();
-
-        // Validasi wajah sudah dilakukan di frontend (face_verified=true dari JS)
-        // Backend memvalidasi ulang: user harus punya face descriptor
-        if (!$user->face_descriptor) {
-            return back()->with('error', 'Wajah Anda belum terdaftar. Silakan hubungi Admin.');
-        }
 
         $request->validate([
             'foto' => 'required',
@@ -141,10 +110,6 @@ class PesertaController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->face_descriptor) {
-            return back()->with('error', 'Wajah Anda belum terdaftar. Silakan hubungi Admin.');
-        }
-
         $request->validate([
             'foto' => 'required',
         ]);
@@ -180,6 +145,11 @@ class PesertaController extends Controller
         $absensi->long_pulang = null;
         $absensi->jarak_pulang = null;
         $absensi->foto_pulang = $fileName;
+        
+        if ($request->has('keterangan')) {
+            $absensi->keterangan = $request->keterangan;
+        }
+
         $absensi->save();
 
         Log::info("Absen pulang berhasil: User {$user->id} ({$user->name}) jam {$jamPulang}");
@@ -227,7 +197,74 @@ class PesertaController extends Controller
     {
         $riwayat = Absensi::where('user_id', Auth::id())
             ->orderBy('tanggal', 'desc')
-            ->get();
+            ->paginate(10);
         return view('peserta.riwayat', compact('riwayat'));
+    }
+
+    public function updateLaporan(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'required|string',
+        ]);
+
+        $absensi = Absensi::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $absensi->keterangan = $request->keterangan;
+        $absensi->save();
+
+        return back()->with('success', 'Laporan kegiatan berhasil diperbarui.');
+    }
+
+    private function getLaporanData($tipeFilter, $filterValue)
+    {
+        $query = Absensi::where('user_id', Auth::id());
+
+        if ($tipeFilter == 'hari') {
+            $query->whereDate('tanggal', $filterValue);
+        } elseif ($tipeFilter == 'minggu') {
+            if (preg_match('/^(\d{4})-W(\d{2})$/', $filterValue, $matches)) {
+                $year = $matches[1];
+                $week = $matches[2];
+                $startOfWeek = \Carbon\Carbon::now()->setISODate($year, $week)->startOfWeek()->format('Y-m-d');
+                $endOfWeek = \Carbon\Carbon::now()->setISODate($year, $week)->endOfWeek()->format('Y-m-d');
+                $query->whereBetween('tanggal', [$startOfWeek, $endOfWeek]);
+            }
+        } else {
+            // default bulan
+            $query->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$filterValue]);
+        }
+
+        $absensi = $query->get();
+
+        $data = [
+            'peserta' => Auth::user(),
+            'hadir' => $absensi->where('status', 'hadir')->count(),
+            'izin' => $absensi->where('status', 'izin')->count(),
+            'sakit' => $absensi->where('status', 'sakit')->count(),
+            'alpa' => $absensi->where('status', 'alpa')->count(),
+            'total' => $absensi->count(),
+            'detail_absensi' => $absensi->sortByDesc('tanggal')
+        ];
+
+        return $data;
+    }
+
+    public function laporan(Request $request)
+    {
+        $tipeFilter = $request->input('tipe_filter', 'bulan');
+        $filterValue = $request->input('filter_value', now()->format('Y-m'));
+
+        $data = $this->getLaporanData($tipeFilter, $filterValue);
+        
+        return view('peserta.laporan', compact('data', 'tipeFilter', 'filterValue'));
+    }
+
+    public function cetakLaporan(Request $request)
+    {
+        $tipeFilter = $request->input('tipe_filter', 'bulan');
+        $filterValue = $request->input('filter_value', now()->format('Y-m'));
+
+        $data = $this->getLaporanData($tipeFilter, $filterValue);
+
+        return view('peserta.laporan_cetak', compact('data', 'tipeFilter', 'filterValue'));
     }
 }

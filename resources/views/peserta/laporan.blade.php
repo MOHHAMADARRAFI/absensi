@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Presensi - Admin SIAP PKL')
+@section('title', 'Laporan Pribadi - SIAP PKL')
 
 @section('content')
 <div class="student-dashboard">
     {{-- Sidebar --}}
-    @include('admin.partials.sidebar')
+    @include('peserta.partials.sidebar')
 
     {{-- Main Content --}}
     <div class="student-main">
         <div class="student-topbar">
             <div>
-                <div class="student-eyebrow">Manajemen</div>
-                <h1 style="font-size: 1.25rem; font-weight: 800; color: #1E293B; letter-spacing: -0.02em;">Laporan Presensi</h1>
+                <div class="student-eyebrow">Data Log</div>
+                <h1 style="font-size: 1.25rem; font-weight: 800; color: #1E293B; letter-spacing: -0.02em;">Laporan Presensi Pribadi</h1>
             </div>
             <div class="student-date">
                 <i class="ph ph-calendar-blank"></i>
@@ -24,7 +24,7 @@
 
             {{-- Filter Laporan --}}
             <div class="card mb-4" style="padding: 1.25rem 1.5rem;">
-                <form method="GET" action="{{ route('admin.laporan') }}"
+                <form method="GET" action="{{ route('peserta.laporan') }}"
                     style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
                     
                     <div>
@@ -42,7 +42,6 @@
                         <input type="week" name="filter_value_minggu" id="filterMinggu" value="{{ $tipeFilter == 'minggu' ? $filterValue : now()->format('Y-\WW') }}" class="form-control" style="display: {{ $tipeFilter == 'minggu' ? 'block' : 'none' }}; width: auto; min-width: 180px; padding: 0.5rem 0.875rem;">
                         <input type="month" name="filter_value_bulan" id="filterBulan" value="{{ $tipeFilter == 'bulan' ? $filterValue : now()->format('Y-m') }}" class="form-control" style="display: {{ $tipeFilter == 'bulan' ? 'block' : 'none' }}; width: auto; min-width: 180px; padding: 0.5rem 0.875rem;">
                         
-                        <!-- Hidden input to hold the actual submitted value -->
                         <input type="hidden" name="filter_value" id="actualFilterValue" value="{{ $filterValue }}">
                     </div>
 
@@ -50,18 +49,50 @@
                         <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;" onclick="updateActualValue()">
                             <i class="ph ph-funnel"></i> Tampilkan
                         </button>
-                        <a href="{{ route('admin.laporan.cetak', ['tipe_filter' => $tipeFilter, 'filter_value' => $filterValue]) }}" target="_blank" class="btn btn-outline" style="padding: 0.5rem 1.25rem; font-size: 0.875rem; border-color: #059669; color: #059669;">
+                        <a href="{{ route('peserta.laporan.cetak', ['tipe_filter' => $tipeFilter, 'filter_value' => $filterValue]) }}" target="_blank" class="btn btn-outline" style="padding: 0.5rem 1.25rem; font-size: 0.875rem; border-color: #059669; color: #059669;">
                             <i class="ph ph-printer"></i> Cetak PDF
                         </a>
                     </div>
                 </form>
             </div>
 
-            {{-- Tabel Laporan --}}
+            <div class="dash-grid" style="margin-bottom: 1.5rem;">
+                <div class="modern-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="font-size: 0.85rem; color: #64748B; font-weight: 600;">Total Kehadiran</h4>
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #D1FAE5; display: flex; align-items: center; justify-content: center; color: #059669;">
+                            <i class="ph ph-check-circle"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['hadir'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
+                </div>
+
+                <div class="modern-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="font-size: 0.85rem; color: #64748B; font-weight: 600;">Total Izin/Sakit</h4>
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #FEF3C7; display: flex; align-items: center; justify-content: center; color: #D97706;">
+                            <i class="ph ph-envelope-simple"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['izin'] + $data['sakit'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
+                </div>
+
+                <div class="modern-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="font-size: 0.85rem; color: #64748B; font-weight: 600;">Total Alpa</h4>
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #FEE2E2; display: flex; align-items: center; justify-content: center; color: #DC2626;">
+                            <i class="ph ph-x-circle"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['alpa'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
+                </div>
+            </div>
+
+            {{-- Tabel Riwayat --}}
             <div class="card" style="padding: 0; overflow: hidden;">
                 <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
                     <h3 class="font-bold" style="font-size: 1rem;">
-                        Rekap Kehadiran — 
+                        Rincian Harian — 
                         @if($tipeFilter == 'hari')
                             {{ \Carbon\Carbon::parse($filterValue)->locale('id')->isoFormat('D MMMM YYYY') }}
                         @elseif($tipeFilter == 'minggu')
@@ -70,70 +101,40 @@
                             {{ \Carbon\Carbon::createFromFormat('Y-m', $filterValue)->locale('id')->isoFormat('MMMM YYYY') }}
                         @endif
                     </h3>
-                    <span class="badge badge-info">{{ count($data) }} peserta</span>
                 </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Peserta</th>
-                                <th>Divisi</th>
-                                <th style="text-align: center; color: #059669;">Hadir</th>
-                                <th style="text-align: center; color: #D97706;">Izin</th>
-                                <th style="text-align: center; color: #DC2626;">Sakit</th>
-                                <th style="text-align: center; color: #64748B;">Alpa</th>
-                                <th style="text-align: center;">% Kehadiran</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Jam Masuk</th>
+                                <th>Jam Pulang</th>
+                                <th>Laporan / Keterangan</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($data as $i => $item)
-                            @php
-                                $persen = $item['total'] > 0
-                                    ? round(($item['hadir'] / $item['total']) * 100)
-                                    : 0;
-                                $warnaBar = $persen >= 80 ? '#22c55e' : ($persen >= 60 ? '#f59e0b' : '#ef4444');
-                            @endphp
+                            @forelse($data['detail_absensi'] as $r)
                             <tr>
-                                <td style="color: #94A3B8; font-size: 0.8rem;">{{ $i + 1 }}</td>
+                                <td style="font-weight: 600; color: #1E293B;">{{ \Carbon\Carbon::parse($r->tanggal)->locale('id')->isoFormat('DD MMM YYYY') }}</td>
                                 <td>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #1D4ED8, #3B82F6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;">
-                                            {{ substr($item['peserta']->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <div class="font-semibold" style="font-size: 0.875rem;">{{ $item['peserta']->name }}</div>
-                                            <div class="text-secondary" style="font-size: 0.72rem;">{{ $item['peserta']->nis_nim }}</div>
-                                        </div>
-                                    </div>
+                                    @if($r->status == 'hadir')
+                                        <span class="badge badge-success">Hadir</span>
+                                    @elseif($r->status == 'izin' || $r->status == 'sakit')
+                                        <span class="badge badge-warning" style="text-transform: capitalize;">{{ $r->status }}</span>
+                                    @else
+                                        <span class="badge badge-danger" style="text-transform: capitalize;">{{ $r->status }}</span>
+                                    @endif
                                 </td>
-                                <td style="font-size: 0.82rem; color: #475569;">{{ $item['peserta']->divisi ?? '-' }}</td>
-                                <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #059669; font-size: 1rem;">{{ $item['hadir'] }}</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #D97706; font-size: 1rem;">{{ $item['izin'] }}</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #DC2626; font-size: 1rem;">{{ $item['sakit'] }}</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #64748B; font-size: 1rem;">{{ $item['alpa'] }}</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
-                                        <div style="width: 60px; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden;">
-                                            <div style="height: 100%; width: {{ $persen }}%; background: {{ $warnaBar }}; border-radius: 3px;"></div>
-                                        </div>
-                                        <span style="font-weight: 700; font-size: 0.82rem; color: {{ $warnaBar }};">{{ $persen }}%</span>
-                                    </div>
-                                </td>
+                                <td style="color: #64748B;">{{ $r->jam_masuk ? \Carbon\Carbon::parse($r->jam_masuk)->format('H:i') : '--:--' }}</td>
+                                <td style="color: #64748B;">{{ $r->jam_pulang ? \Carbon\Carbon::parse($r->jam_pulang)->format('H:i') : '--:--' }}</td>
+                                <td style="color: #475569; font-size: 0.85rem;">{{ $r->keterangan ?: '-' }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center text-secondary" style="padding: 2.5rem;">
-                                    <i class="ph ph-chart-bar" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.3;"></i>
-                                    Tidak ada data peserta untuk ditampilkan.
+                                <td colspan="5" class="text-center text-secondary" style="padding: 2.5rem;">
+                                    <i class="ph ph-calendar-blank" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+                                    Tidak ada data absensi untuk ditampilkan.
                                 </td>
                             </tr>
                             @endforelse
@@ -145,7 +146,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
 function changeFilterInput() {
