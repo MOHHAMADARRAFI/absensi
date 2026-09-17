@@ -52,6 +52,7 @@ class AdminController extends Controller
             'sekolah_universitas' => 'nullable|string|max:255',
             'jurusan' => 'nullable|string|max:255',
             'divisi' => 'nullable|string|max:255',
+            'pembimbing' => 'nullable|string|max:255',
             'tgl_mulai' => 'nullable|date',
             'tgl_selesai' => 'nullable|date|after_or_equal:tgl_mulai',
         ]);
@@ -62,6 +63,7 @@ class AdminController extends Controller
             'sekolah_universitas' => $request->sekolah_universitas,
             'jurusan' => $request->jurusan,
             'divisi' => $request->divisi,
+            'pembimbing' => $request->pembimbing,
             'tgl_mulai' => $request->tgl_mulai,
             'tgl_selesai' => $request->tgl_selesai,
         ]);
@@ -165,5 +167,54 @@ class AdminController extends Controller
         $data = $this->getLaporanData($tipeFilter, $filterValue);
 
         return view('admin.laporan_cetak', compact('data', 'tipeFilter', 'filterValue'));
+    }
+
+    public function pengaturan()
+    {
+        $pengaturan = \App\Models\Pengaturan::first();
+        return view('admin.pengaturan', compact('pengaturan'));
+    }
+
+    public function updatePengaturan(Request $request)
+    {
+        $request->validate([
+            'nama_kantor' => 'required|string|max:255',
+            'latitude_kantor' => 'required|numeric',
+            'longitude_kantor' => 'required|numeric',
+            'radius_meter' => 'required|numeric|min:1',
+        ]);
+
+        $pengaturan = \App\Models\Pengaturan::first();
+        if (!$pengaturan) {
+            $pengaturan = new \App\Models\Pengaturan();
+        }
+
+        $pengaturan->nama_kantor = $request->nama_kantor;
+        $pengaturan->latitude_kantor = $request->latitude_kantor;
+        $pengaturan->longitude_kantor = $request->longitude_kantor;
+        $pengaturan->radius_meter = $request->radius_meter;
+        $pengaturan->save();
+
+        return redirect()->back()->with('success', 'Pengaturan sistem berhasil diperbarui.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Password saat ini tidak cocok.']);
+        }
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->new_password)
+        ]);
+
+        return redirect()->back()->with('success', 'Password berhasil diubah.');
     }
 }

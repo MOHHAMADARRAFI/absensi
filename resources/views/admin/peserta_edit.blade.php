@@ -63,9 +63,15 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label class="form-label font-semibold text-secondary">Penempatan Divisi</label>
-                        <input type="text" name="divisi" class="form-control" value="{{ old('divisi', $peserta->divisi) }}" placeholder="Contoh: IT, Administrasi, dll">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group mb-0">
+                            <label class="form-label font-semibold text-secondary">Penempatan Divisi</label>
+                            <input type="text" name="divisi" class="form-control" value="{{ old('divisi', $peserta->divisi) }}" placeholder="Contoh: IT, Administrasi, dll">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label font-semibold text-secondary">Pembimbing</label>
+                            <input type="text" name="pembimbing" class="form-control" value="{{ old('pembimbing', $peserta->pembimbing) }}" placeholder="Nama Pembimbing">
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">

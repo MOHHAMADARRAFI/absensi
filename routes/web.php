@@ -39,6 +39,9 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
 
     Route::get('/laporan', [PesertaController::class, 'laporan'])->name('peserta.laporan');
     Route::get('/laporan/cetak', [PesertaController::class, 'cetakLaporan'])->name('peserta.laporan.cetak');
+    
+    Route::get('/pengaturan', [PesertaController::class, 'pengaturan'])->name('peserta.pengaturan');
+    Route::post('/pengaturan/password', [PesertaController::class, 'updatePassword'])->name('peserta.update_password');
 });
 
 // Admin Routes (harus login, role admin)
@@ -55,5 +58,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
     Route::get('/laporan/cetak', [AdminController::class, 'cetakLaporan'])->name('laporan.cetak');
 
-
+    Route::get('/pengaturan', [AdminController::class, 'pengaturan'])->name('pengaturan');
+    Route::post('/pengaturan', [AdminController::class, 'updatePengaturan'])->name('update_pengaturan');
+    Route::post('/pengaturan/password', [AdminController::class, 'updatePassword'])->name('update_password');
 });

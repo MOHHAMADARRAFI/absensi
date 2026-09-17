@@ -4,6 +4,7 @@
 
 @push('styles')
 <style>
+    @import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
     /* Radio Pills */
     .keterangan-selector {
         display: flex;
@@ -128,7 +129,19 @@
                             </div>
                         @endif
 
-                        <label class="form-label mb-3">Foto Kehadiran (Wajib)</label>
+                        @if($type === 'masuk')
+                            <label class="form-label mb-3 mt-2">Lokasi Anda (Wajib)</label>
+                            <div id="map" style="height: 250px; border-radius: 14px; margin-bottom: 0.5rem; z-index: 1;"></div>
+                            <div id="locationStatus" class="alert alert-warning mb-4" style="font-size: 0.85rem; padding: 0.75rem; border-radius: 8px;">
+                                <i class="ph ph-spinner-gap spin"></i> Mendapatkan lokasi GPS...
+                            </div>
+                            
+                            <input type="hidden" name="lat_masuk" id="lat_masuk">
+                            <input type="hidden" name="long_masuk" id="long_masuk">
+                            <input type="hidden" name="jarak_masuk" id="jarak_masuk">
+                        @endif
+
+                        <label class="form-label mb-3 mt-4">Foto Kehadiran (Wajib)</label>
 
                         <div class="webcam-wrapper">
                             <video id="webcam" autoplay playsinline muted></video>
@@ -184,10 +197,131 @@
 @endsection
 
 @push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     let stream = null;
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('faceCanvas');
+    
+    // GPS & Map Variables
+    const absenType = '{{ $type }}';
+    const kantorLat = {{ $pengaturan->latitude_kantor ?? 0 }};
+    const kantorLng = {{ $pengaturan->longitude_kantor ?? 0 }};
+    const maxRadius = {{ $pengaturan->radius_meter ?? 50 }};
+    let map, userMarker, watchId;
+    let locationValid = false;
+
+    function initMap() {
+        if(absenType !== 'masuk' || !document.getElementById('map')) return;
+        
+        map = L.map('map').setView([kantorLat, kantorLng], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Circle Kantor
+        L.circle([kantorLat, kantorLng], {
+            color: 'green',
+            fillColor: '#22c55e',
+            fillOpacity: 0.2,
+            radius: maxRadius
+        }).addTo(map).bindPopup("Area Kantor");
+
+        watchLocation();
+    }
+
+    function watchLocation() {
+        if (navigator.geolocation) {
+            watchId = navigator.geolocation.watchPosition(updatePosition, showError, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            alert("Geolocation tidak didukung oleh browser ini.");
+        }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371e3; // metres
+        const φ1 = lat1 * Math.PI/180;
+        const φ2 = lat2 * Math.PI/180;
+        const Δφ = (lat2-lat1) * Math.PI/180;
+        const Δλ = (lon2-lon1) * Math.PI/180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function updatePosition(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const distance = Math.round(calculateDistance(lat, lng, kantorLat, kantorLng));
+        
+        document.getElementById('lat_masuk').value = lat;
+        document.getElementById('long_masuk').value = lng;
+        document.getElementById('jarak_masuk').value = distance;
+
+        if (!userMarker) {
+            userMarker = L.marker([lat, lng]).addTo(map);
+        } else {
+            userMarker.setLatLng([lat, lng]);
+        }
+        
+        map.setView([lat, lng]);
+
+        const statusDiv = document.getElementById('locationStatus');
+        const btnSubmit = document.getElementById('btnSubmitAbsen');
+        
+        if (distance <= maxRadius) {
+            locationValid = true;
+            statusDiv.className = 'alert mb-4';
+            statusDiv.style.backgroundColor = '#ECFDF5';
+            statusDiv.style.color = '#065F46';
+            statusDiv.style.border = '1px solid #A7F3D0';
+            statusDiv.innerHTML = `<i class="ph ph-check-circle"></i> Anda berada dalam radius (${distance} meter). Bisa absen.`;
+            
+            // Check if camera is also ready
+            if(stream) btnSubmit.disabled = false;
+        } else {
+            locationValid = false;
+            statusDiv.className = 'alert mb-4';
+            statusDiv.style.backgroundColor = '#FEF2F2';
+            statusDiv.style.color = '#991B1B';
+            statusDiv.style.border = '1px solid #FECACA';
+            statusDiv.innerHTML = `<i class="ph ph-warning-circle"></i> Anda di luar radius (${distance}m / max ${maxRadius}m). Tidak bisa absen.`;
+            btnSubmit.disabled = true;
+        }
+    }
+
+    function showError(error) {
+        const statusDiv = document.getElementById('locationStatus');
+        if(!statusDiv) return;
+        
+        statusDiv.className = 'alert mb-4';
+        statusDiv.style.backgroundColor = '#FEF2F2';
+        statusDiv.style.color = '#991B1B';
+        statusDiv.style.border = '1px solid #FECACA';
+        
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                statusDiv.innerHTML = "Akses lokasi ditolak. Izinkan lokasi untuk absen.";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                statusDiv.innerHTML = "Informasi lokasi tidak tersedia.";
+                break;
+            case error.TIMEOUT:
+                statusDiv.innerHTML = "Request lokasi timeout.";
+                break;
+            default:
+                statusDiv.innerHTML = "Terjadi kesalahan yang tidak diketahui.";
+                break;
+        }
+        document.getElementById('btnSubmitAbsen').disabled = true;
+    }
 
     function toggleForm() {
         const val = document.querySelector('input[name="keterangan_type"]:checked').value;
@@ -200,6 +334,7 @@
             formHadir.style.display = 'block';
             formIzinSakit.style.display = 'none';
             if(!stream) startCamera();
+            if(absenType === 'masuk') setTimeout(() => { if(map) map.invalidateSize(); }, 200);
         } else {
             formHadir.style.display = 'none';
             formIzinSakit.style.display = 'block';
@@ -225,7 +360,13 @@
 
             document.getElementById('camDot').classList.add('on');
             document.getElementById('camLabel').textContent = 'Kamera Aktif';
-            document.getElementById('btnSubmitAbsen').disabled = false;
+            
+            // Re-check conditions to enable button
+            if (absenType === 'masuk' && !locationValid) {
+                document.getElementById('btnSubmitAbsen').disabled = true;
+            } else {
+                document.getElementById('btnSubmitAbsen').disabled = false;
+            }
 
             video.addEventListener('loadedmetadata', () => {
                 canvas.width = video.videoWidth;
@@ -250,6 +391,11 @@
             return;
         }
         
+        if (absenType === 'masuk' && !locationValid) {
+            alert('Lokasi Anda di luar radius. Tidak dapat mengirim presensi.');
+            return;
+        }
+        
         // Capture Foto
         const context = canvas.getContext('2d');
         // Mirror the image because video is scaled -1 in CSS
@@ -265,15 +411,21 @@
         btn.disabled = true;
         
         stopCamera();
+        if(watchId) navigator.geolocation.clearWatch(watchId);
+        
         document.getElementById('form-hadir').submit();
     }
 
     window.addEventListener('load', function() {
         if(document.querySelector('input[name="keterangan_type"]:checked').value === 'hadir') {
             startCamera();
+            initMap();
         }
     });
 
-    window.addEventListener('beforeunload', stopCamera);
+    window.addEventListener('beforeunload', function() {
+        stopCamera();
+        if(watchId) navigator.geolocation.clearWatch(watchId);
+    });
 </script>
 @endpush

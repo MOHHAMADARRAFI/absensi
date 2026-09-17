@@ -53,6 +53,9 @@ class PesertaController extends Controller
 
         $request->validate([
             'foto' => 'required',
+            'lat_masuk' => 'required|numeric',
+            'long_masuk' => 'required|numeric',
+            'jarak_masuk' => 'required|numeric',
         ]);
 
         // Cek sudah absen masuk hari ini
@@ -95,10 +98,34 @@ class PesertaController extends Controller
         $absensi->jam_masuk = $jamMasuk;
         $absensi->status = 'hadir';
         $absensi->foto_masuk = $fileName;
-        // Kosongkan field GPS (tidak digunakan)
-        $absensi->lat_masuk = null;
-        $absensi->long_masuk = null;
-        $absensi->jarak_masuk = null;
+
+        $absensi->lat_masuk = $request->lat_masuk;
+        $absensi->long_masuk = $request->long_masuk;
+        $absensi->jarak_masuk = $request->jarak_masuk;
+
+        // Validasi Jarak (Backend)
+        if ($pengaturan && $pengaturan->latitude_kantor && $pengaturan->longitude_kantor) {
+            $earthRadius = 6371000;
+            $latFrom = deg2rad($request->lat_masuk);
+            $lonFrom = deg2rad($request->long_masuk);
+            $latTo = deg2rad($pengaturan->latitude_kantor);
+            $lonTo = deg2rad($pengaturan->longitude_kantor);
+
+            $latDelta = $latTo - $latFrom;
+            $lonDelta = $lonTo - $lonFrom;
+
+            $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+            $distance = $angle * $earthRadius;
+
+            // Beri toleransi akurasi GPS sekitar 15 meter
+            $maxAllowedRadius = $pengaturan->radius_meter + 15;
+            
+            if ($distance > $maxAllowedRadius) {
+                return back()->with('error', 'Gagal: Lokasi Anda (' . round($distance) . ' meter) berada di luar radius yang diizinkan (' . $pengaturan->radius_meter . ' meter).');
+            }
+            $absensi->jarak_masuk = round($distance);
+        }
+
         $absensi->save();
 
         Log::info("Absen masuk berhasil: User {$user->id} ({$user->name}) jam {$jamMasuk}");
@@ -266,5 +293,31 @@ class PesertaController extends Controller
         $data = $this->getLaporanData($tipeFilter, $filterValue);
 
         return view('peserta.laporan_cetak', compact('data', 'tipeFilter', 'filterValue'));
+    }
+
+    public function pengaturan()
+    {
+        $user = Auth::user();
+        return view('peserta.pengaturan', compact('user'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Password saat ini tidak cocok.']);
+        }
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->new_password)
+        ]);
+
+        return redirect()->back()->with('success', 'Password berhasil diubah.');
     }
 }

@@ -1,8 +1,8 @@
 <div class="student-sidebar">
     <div class="student-brand" style="display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div class="student-brand-mark">
-                <i class="ph ph-map-pin-line"></i>
+            <div class="student-brand-mark" style="background: transparent; padding: 0; box-shadow: none;">
+                <img src="{{ asset('img/logo-karawang.png') }}" alt="Logo Karawang" style="width: 36px; height: auto;">
             </div>
             <div>
                 <strong>SIAP PKL</strong>
@@ -26,6 +26,10 @@
         <a href="{{ route('peserta.laporan') }}" class="student-nav-item {{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
             <i class="ph ph-file-text"></i>
             Laporan
+        </a>
+        <a href="{{ route('peserta.pengaturan') }}" class="student-nav-item {{ request()->routeIs('peserta.pengaturan') ? 'active' : '' }}">
+            <i class="ph ph-gear"></i>
+            Pengaturan
         </a>
     </nav>
 
