@@ -3,66 +3,88 @@
 @section('title', 'Login - SIAP PKL')
 
 @section('content')
-<div class="auth-wrapper d-flex" style="flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+<div class="auth-wrapper dark-theme-wrapper" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('{{ asset('img/login_bg_dark.jpg') }}') center/cover no-repeat; overflow: hidden; padding: 2rem;">
+    
     <!-- Branding -->
-    <div class="auth-brand text-center" style="z-index: 1; margin-bottom: 2rem;">
-        <div class="brand-icon" style="margin: 0 auto 1.5rem auto;">
-            <i class="ph ph-student"></i>
-        </div>
-        <h1 class="text-white">SIAP PKL</h1>
-        <p class="subtitle">Sistem Informasi Absensi & Penilaian PKL</p>
+    <div class="auth-brand text-center" style="z-index: 10; margin-bottom: 2rem;">
+        <h1 style="color: #ffffff; font-weight: 800; font-size: 2.5rem; margin-bottom: 0.25rem;">SIAP PKL</h1>
+        <p class="subtitle" style="color: rgba(255, 255, 255, 0.8); font-size: 1rem; font-weight: 500;">Sistem Informasi Absensi & Penilaian PKL</p>
     </div>
 
     <!-- Form -->
-    <div class="auth-right w-100" style="padding: 0; background: transparent;">
-        <div class="auth-form-card" style="margin: 0 auto;">
+    <div class="w-100" style="padding: 0; z-index: 10; display: flex; justify-content: center;">
+        <div class="auth-form-card dark-form-card" style="width: 100%; max-width: 420px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 2.5rem 2rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.2);">
             <div class="text-center mb-4">
-                <h2 class="text-dark font-bold" style="font-size: 1.75rem;">Selamat Datang! 👋</h2>
-                <p class="text-secondary mt-1">Masuk untuk melanjutkan aktivitas PKL-mu</p>
+                <h2 style="color: #ffffff; font-weight: 800; font-size: 1.5rem;">Selamat Datang! 👋</h2>
+                <p style="color: rgba(255, 255, 255, 0.7); margin-top: 0.25rem; font-size: 0.85rem;">Masuk untuk melanjutkan aktivitas PKL-mu</p>
             </div>
 
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 
                 <div class="form-group mb-3">
-                    <label for="login" class="form-label">Email atau NIS/NIM</label>
-                    <div class="input-with-icon">
-                        <i class="ph ph-user"></i>
-                        <input type="text" id="login" name="login" class="form-control" placeholder="Masukkan Email atau NIS/NIM" required autofocus value="{{ old('login') }}">
+                    <label for="login" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Email atau NIS/NIM</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <i class="ph ph-user" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
+                        <input type="text" id="login" name="login" placeholder="Masukkan Email atau NIS/NIM" required autofocus value="{{ old('login') }}" 
+                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
                     </div>
                     @error('login')
-                        <div class="text-error mt-1"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group mb-4">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="input-with-icon">
-                        <i class="ph ph-lock"></i>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan Password" required>
+                    <label for="password" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Password</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <i class="ph ph-lock" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
+                        <input type="password" id="password" name="password" placeholder="Masukkan Password" required 
+                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
                     </div>
                     @error('password')
-                        <div class="text-error mt-1"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 btn-lg auth-btn">
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); color: white; padding: 0.85rem 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; border: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); transition: all 0.3s;">
                     <span>Masuk Sekarang</span>
-                    <i class="ph ph-arrow-right font-bold"></i>
+                    <i class="ph ph-arrow-right font-bold" style="font-size: 1.2rem;"></i>
                 </button>
 
                 <div class="text-center mt-4">
-                    <p class="text-secondary" style="font-size: 0.9rem;">
+                    <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
                         Belum punya akun PKL? <br>
-                        <a href="{{ route('register') }}" class="font-bold text-primary hover-underline mt-2 d-inline-block">Daftar sekarang</a>
+                        <a href="{{ route('register') }}" style="color: #2DD4BF; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 0.5rem;">Daftar sekarang</a>
                     </p>
                 </div>
             </form>
         </div>
     </div>
     
-    <div class="auth-footer-text text-center mt-4" style="position: static; z-index: 1;">
+    <div class="text-center mt-4" style="position: relative; z-index: 10; color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
         &copy; {{ date('Y') }} Kecamatan Cikampek. Dibuat untuk Pelajar PKL.
     </div>
 </div>
+
+<style>
+    /* Dark theme input focus states */
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+    input:focus {
+        background: rgba(255, 255, 255, 0.25) !important;
+        border-color: #2DD4BF !important;
+        box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.15), inset 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    input:focus + i, div:focus-within > i.ph {
+        color: #2DD4BF !important;
+    }
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4) !important;
+    }
+    a:hover {
+        text-decoration: underline !important;
+    }
+</style>
 @endsection
