@@ -3,132 +3,177 @@
 @section('title', 'Daftar - SIAP PKL')
 
 @section('content')
-<div class="auth-wrapper dark-theme-wrapper" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('{{ asset('img/login_bg_dark.jpg') }}') center/cover no-repeat; overflow: hidden; padding: 2rem;">
+<div class="auth-wrapper" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: url('{{ asset('img/baackground-login.png') }}') center/cover no-repeat, linear-gradient(135deg, #064E33 0%, #032A1C 100%); font-family: 'Inter', sans-serif; padding: 2rem 1rem; overflow-y: auto;">
     
     <!-- Branding -->
-    <div class="auth-brand text-center" style="z-index: 10; margin-bottom: 2rem;">
-        <h1 style="color: #ffffff; font-weight: 800; font-size: 2.5rem; margin-bottom: 0.25rem;">SIAP PKL</h1>
-        <p class="subtitle" style="color: rgba(255, 255, 255, 0.8); font-size: 1rem; font-weight: 500;">Sistem Informasi Absensi & Penilaian PKL</p>
+    <div class="auth-brand text-center" style="z-index: 10; margin-bottom: 1rem;">
+        <div style="background-color: #1AC073; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+            <i class="ph ph-graduation-cap" style="color: white; font-size: 20px;"></i>
+        </div>
+        <h1 style="color: #ffffff; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.15rem;">SIAP PKL</h1>
+        <p class="subtitle" style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; font-weight: 400; margin-bottom: 0;">Sistem Informasi Absensi & Penilaian PKL</p>
     </div>
 
     <!-- Form -->
     <div class="w-100" style="padding: 0; z-index: 10; display: flex; justify-content: center;">
-        <div class="auth-form-card dark-form-card" style="width: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 2.5rem 2rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.2);">
-            <div class="text-center mb-4">
-                <h2 style="color: #ffffff; font-weight: 800; font-size: 1.5rem;">Buat Akun Baru ✨</h2>
-                <p style="color: rgba(255, 255, 255, 0.7); margin-top: 0.25rem; font-size: 0.85rem;">Lengkapi data diri kamu di bawah ini</p>
+        <div class="auth-form-card" style="width: 100%; max-width: 600px; background: #022516; padding: 2rem; border-radius: 1.25rem; border: 1px solid #144930; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
+            <div class="mb-3 text-center" style="text-align: left !important;">
+                <h2 style="color: #ffffff; font-weight: 700; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.15rem;">Buat Akun Baru <span style="font-size: 1.25rem;">✨</span></h2>
+                <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; margin-bottom: 1rem;">Lengkapi data diri kamu di bawah ini</p>
             </div>
 
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 
-                <div class="form-group mb-3">
-                    <label for="name" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Nama Lengkap</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <i class="ph ph-user" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
-                        <input type="text" id="name" name="name" placeholder="Masukkan Nama Lengkap" required autofocus value="{{ old('name') }}" 
-                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    @error('name')
-                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="email" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Email</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <i class="ph ph-envelope-simple" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
-                        <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif" required value="{{ old('email') }}" 
-                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    @error('email')
-                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="nis_nim" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">NIS / NIM</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <i class="ph ph-identification-card" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
-                        <input type="text" id="nis_nim" name="nis_nim" placeholder="Nomor Induk Siswa/Mahasiswa" required value="{{ old('nis_nim') }}" 
-                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    @error('nis_nim')
-                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="sekolah_universitas" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Asal Sekolah / Universitas</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <i class="ph ph-buildings" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
-                        <input type="text" id="sekolah_universitas" name="sekolah_universitas" placeholder="Contoh: SMK Negeri 1 Cikampek" required value="{{ old('sekolah_universitas') }}" 
-                            style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    @error('sekolah_universitas')
-                        <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="d-flex gap-3">
-                    <div class="form-group w-100 mb-4">
-                        <label for="password" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Password</label>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="name" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Nama Lengkap</label>
                         <div style="position: relative; display: flex; align-items: center;">
-                            <i class="ph ph-lock" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
-                            <input type="password" id="password" name="password" placeholder="Buat Password" required 
-                                style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                            <i class="ph ph-user" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="text" id="name" name="name" placeholder="Masukkan Nama Lengkap" required autofocus value="{{ old('name') }}" 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
                         </div>
-                        @error('password')
-                            <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @error('name')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div class="form-group w-100 mb-4">
-                        <label for="password_confirmation" style="display: block; font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Konfirmasi Password</label>
+                    <div class="col-md-6">
+                        <label for="nis_nim" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">NIS / NIM</label>
                         <div style="position: relative; display: flex; align-items: center;">
-                            <i class="ph ph-lock-key" style="position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10;"></i>
+                            <i class="ph ph-identification-card" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="text" id="nis_nim" name="nis_nim" placeholder="Nomor Induk" required value="{{ old('nis_nim') }}" 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                        </div>
+                        @error('nis_nim')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="email" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Email</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-envelope-simple" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="email" id="email" name="email" placeholder="Masukkan Email Aktif" required value="{{ old('email') }}" 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                        </div>
+                        @error('email')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="sekolah_universitas" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Asal Sekolah / Kampus</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-buildings" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="text" id="sekolah_universitas" name="sekolah_universitas" placeholder="Contoh: SMKN 1" required value="{{ old('sekolah_universitas') }}" 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                        </div>
+                        @error('sekolah_universitas')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="password" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Password</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-lock" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="password" id="password" name="password" placeholder="Buat Password" required 
+                                style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                            <i class="ph ph-eye-slash" id="togglePassword" style="position: absolute; right: 0.75rem; color: rgba(255, 255, 255, 0.5); font-size: 1.15rem; z-index: 10; cursor: pointer;"></i>
+                        </div>
+                        @error('password')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="password_confirmation" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Konfirmasi Password</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-lock-key" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
                             <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi Password" required 
-                                style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                                style="width: 100%; padding: 0.75rem 2.5rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                            <i class="ph ph-eye-slash" id="togglePasswordConf" style="position: absolute; right: 0.75rem; color: rgba(255, 255, 255, 0.5); font-size: 1.15rem; z-index: 10; cursor: pointer;"></i>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); color: white; padding: 0.85rem 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; border: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); transition: all 0.3s;">
+                <button type="submit" style="width: 100%; background: #10B981; color: white; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s; margin-top: 0.5rem;">
                     <span>Daftar Sekarang</span>
-                    <i class="ph ph-user-plus font-bold" style="font-size: 1.2rem;"></i>
+                    <i class="ph ph-user-plus" style="font-size: 1.05rem; margin-left: auto; margin-right: 0;"></i>
                 </button>
+                <style>
+                    button[type="submit"] {
+                        justify-content: space-between !important;
+                    }
+                    button[type="submit"] span {
+                        margin-left: auto;
+                        margin-right: auto;
+                        transform: translateX(10px);
+                    }
+                </style>
 
-                <div class="text-center mt-4">
-                    <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
+                <div class="text-center mt-3">
+                    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-bottom: 0;">
                         Sudah punya akun PKL? <br>
-                        <a href="{{ route('login') }}" style="color: #2DD4BF; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 0.5rem;">Masuk di sini</a>
+                        <a href="{{ route('login') }}" style="color: #10B981; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 0.2rem;">Masuk di sini</a>
                     </p>
                 </div>
             </form>
         </div>
     </div>
     
-    <div class="text-center mt-4" style="position: relative; z-index: 10; color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
-        &copy; {{ date('Y') }} Kecamatan Cikampek. Dibuat untuk Pelajar PKL.
+    <div class="text-center mt-3" style="position: relative; z-index: 10; color: rgba(255, 255, 255, 0.4); font-size: 0.75rem;">
+        &copy; 2026 Kecamatan Cikampek. Dibuat untuk Pelajar PKL.
     </div>
 </div>
 
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('password');
+        const icon = e.target;
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('ph-eye-slash');
+            icon.classList.add('ph-eye');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('ph-eye');
+            icon.classList.add('ph-eye-slash');
+        }
+    });
+
+    document.getElementById('togglePasswordConf').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('password_confirmation');
+        const icon = e.target;
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('ph-eye-slash');
+            icon.classList.add('ph-eye');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('ph-eye');
+            icon.classList.add('ph-eye-slash');
+        }
+    });
+</script>
+
 <style>
-    /* Dark theme input focus states */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    
     input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.3);
     }
     input:focus {
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-color: #2DD4BF !important;
-        box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.15), inset 0 2px 4px rgba(0,0,0,0.1) !important;
-    }
-    input:focus + i, div:focus-within > i.ph {
-        color: #2DD4BF !important;
+        border-color: #10B981 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
     }
     button:hover {
+        background: #0FA472 !important;
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4) !important;
     }
     a:hover {
         text-decoration: underline !important;
