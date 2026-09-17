@@ -16,6 +16,7 @@
 </head>
 <body class="bg-light">
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     @yield('content')
 
     <!-- Toast Notification -->
@@ -44,6 +45,16 @@
                 }, 3000);
             }
         });
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.student-sidebar, .sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            }
+        }
     </script>
     @stack('scripts')
 </body>

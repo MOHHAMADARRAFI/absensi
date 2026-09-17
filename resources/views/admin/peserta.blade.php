@@ -10,9 +10,14 @@
     {{-- Main Content --}}
     <div class="student-main">
         <div class="student-topbar">
-            <div>
-                <div class="student-eyebrow">Manajemen</div>
-                <h1 style="font-size: 1.25rem; font-weight: 800; color: #1E293B; letter-spacing: -0.02em;">Data Peserta PKL</h1>
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ph ph-list"></i>
+                </button>
+                <div>
+                    <div class="student-eyebrow">Manajemen</div>
+                    <h1 style="font-size: 1.25rem; font-weight: 800; color: #1E293B; letter-spacing: -0.02em;">Data Peserta PKL</h1>
+                </div>
             </div>
             <div class="student-date">
                 <i class="ph ph-calendar-blank"></i>

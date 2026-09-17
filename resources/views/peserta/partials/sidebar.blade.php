@@ -1,12 +1,17 @@
 <div class="student-sidebar">
-    <div class="student-brand">
-        <div class="student-brand-mark">
-            <i class="ph ph-map-pin-line"></i>
+    <div class="student-brand" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="student-brand-mark">
+                <i class="ph ph-map-pin-line"></i>
+            </div>
+            <div>
+                <strong>SIAP PKL</strong>
+                <span>Kec. Cikampek</span>
+            </div>
         </div>
-        <div>
-            <strong>SIAP PKL</strong>
-            <span>Kec. Cikampek</span>
-        </div>
+        <button class="mobile-menu-toggle d-lg-none" onclick="toggleSidebar()" style="color: white;">
+            <i class="ph ph-x"></i>
+        </button>
     </div>
 
     <nav class="student-nav">

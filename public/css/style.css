@@ -1073,51 +1073,6 @@ textarea {
 }
 
 @media (max-width: 992px) {
-    .student-dashboard {
-        flex-direction: column;
-    }
-
-    .student-sidebar {
-        width: 100%;
-        min-height: auto;
-        padding: 1.5rem;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .student-brand {
-        padding: 0;
-        margin-bottom: 0;
-    }
-
-    .student-nav {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        width: 100%;
-        margin: 1rem 0;
-        order: 3;
-    }
-
-    .student-sidebar-footer {
-        margin-top: 0;
-        padding: 0;
-        border-top: none;
-        order: 2;
-        width: auto;
-    }
-
-    .student-topbar {
-        padding: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
 
     .student-content {
         padding: 1.5rem;
@@ -1154,19 +1109,6 @@ textarea {
 }
 
 @media (max-width: 600px) {
-    .student-nav-item {
-        flex: 1;
-        justify-content: center;
-        text-align: center;
-        font-size: 0.8rem;
-        padding: 0.6rem;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .student-nav-item i {
-        font-size: 1.5rem;
-    }
 
     .student-action-grid {
         grid-template-columns: 1fr;
@@ -2376,4 +2318,124 @@ th:last-child {
     mix-blend-mode: lighten;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
     transform: translateY(1rem);
+}
+
+/* ========================================= */
+/*         MOBILE RESPONSIVENESS (NEW)       */
+/* ========================================= */
+.mobile-menu-toggle {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    /* Sidebars */
+    .student-sidebar, .sidebar {
+        position: fixed;
+        left: -320px;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+    .student-sidebar.show, .sidebar.show {
+        left: 0;
+    }
+    
+    /* Main Content Margins */
+    .student-main, .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 5rem 1rem 1rem 1rem !important; /* give space for mobile header and side padding */
+    }
+    
+    /* Mobile Headers / Topbars */
+    .student-topbar, .dashboard-header {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 900;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 1rem 1.5rem !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        font-size: 1.75rem;
+        color: var(--dark);
+        cursor: pointer;
+        padding: 0;
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+    
+    /* Fix Grids */
+    .student-grid, .dashboard-stats, .laporan-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+    
+    .hero-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem !important;
+    }
+    
+    .hero-details {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    .hero-detail-item {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .hero-illustration {
+        display: none !important;
+    }
+    
+    /* Table Responsive */
+    .table-container, .card-body {
+        overflow-x: auto;
+    }
+    
+    /* Hide some info on mobile topbar */
+    .student-date .font-semibold {
+        display: none; /* hide long text date */
+    }
+    .student-divider {
+        display: none;
+    }
+    .student-date {
+        margin-left: auto;
+    }
 }

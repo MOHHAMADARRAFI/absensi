@@ -1,12 +1,17 @@
 <div class="student-sidebar">
-    <div class="student-brand">
-        <div class="student-brand-mark">
-            <i class="ph ph-buildings"></i>
+    <div class="student-brand" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="student-brand-mark">
+                <i class="ph ph-buildings"></i>
+            </div>
+            <div>
+                <strong>SIAP PKL</strong>
+                <span>Admin</span>
+            </div>
         </div>
-        <div>
-            <strong>SIAP PKL</strong>
-            <span>Admin</span>
-        </div>
+        <button class="mobile-menu-toggle d-lg-none" onclick="toggleSidebar()" style="color: white;">
+            <i class="ph ph-x"></i>
+        </button>
     </div>
 
     <nav class="student-nav">

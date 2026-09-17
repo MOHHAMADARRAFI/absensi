@@ -42,7 +42,10 @@
     <!-- Main Content -->
     <div class="student-main">
         <div class="student-topbar">
-            <div>
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ph ph-list"></i>
+                </button>
                 <h1>Dashboard Peserta</h1>
             </div>
             <div class="student-date">
