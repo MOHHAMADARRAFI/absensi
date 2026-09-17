@@ -2,101 +2,395 @@
 
 @section('title', 'Dashboard Peserta')
 
-
-
 @section('content')
-<div class="mobile-layout">
-    <div class="mobile-header">
-        <div class="d-flex justify-between align-center">
-            <div class="user-profile-header">
+@php
+    $tglMulai = $user->tgl_mulai ? \Carbon\Carbon::parse($user->tgl_mulai) : null;
+    $tglSelesai = $user->tgl_selesai ? \Carbon\Carbon::parse($user->tgl_selesai) : null;
+    
+    $totalHari = 0;
+    $sisaHari = 0;
+    
+    if($tglMulai && $tglSelesai) {
+        $totalHari = $tglMulai->diffInDays($tglSelesai) + 1;
+        if(now()->startOfDay()->lte($tglSelesai)) {
+            $sisaHari = now()->startOfDay()->diffInDays($tglSelesai) + 1;
+        }
+    }
+
+    $hadir = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'hadir')->count();
+    $izin = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'izin')->count();
+    $sakit = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'sakit')->count();
+    
+    $persentase = $totalHari > 0 ? round(($hadir / $totalHari) * 100) : 0;
+    if($persentase > 100) $persentase = 100;
+    
+    $durasi = '--';
+    if($absensiHariIni && $absensiHariIni->jam_masuk) {
+        $masuk = \Carbon\Carbon::createFromFormat('H:i:s', $absensiHariIni->jam_masuk);
+        $pulang = $absensiHariIni->jam_pulang ? \Carbon\Carbon::createFromFormat('H:i:s', $absensiHariIni->jam_pulang) : now();
+        $diff = $masuk->diff($pulang);
+        $durasi = $diff->h . 'j ' . $diff->i . 'm';
+    }
+@endphp
+<div class="student-dashboard">
+    <!-- Sidebar -->
+    <div class="student-sidebar">
+        <div class="student-brand">
+            <div class="student-brand-mark">
+                <i class="ph ph-map-pin-line"></i>
+            </div>
+            <div>
+                <strong>SIAP PKL</strong>
+                <span>Kec. Cikampek</span>
+            </div>
+        </div>
+
+        <nav class="student-nav">
+            <a href="{{ route('peserta.dashboard') }}" class="student-nav-item active">
+                <i class="ph ph-squares-four"></i>
+                Dashboard
+            </a>
+            <a href="{{ route('peserta.riwayat') }}" class="student-nav-item">
+                <i class="ph ph-clock-counter-clockwise"></i>
+                Riwayat Presensi
+            </a>
+        </nav>
+
+        <div class="sidebar-illustration">
+            <img src="{{ asset('img/sidebar-ill.png') }}" alt="Ilustrasi Kecamatan Cikampek">
+        </div>
+
+        <div class="student-sidebar-footer">
+            <div class="student-mini-profile">
                 @if($user->foto_profil)
-                    <img src="{{ asset('storage/' . $user->foto_profil) }}" class="avatar" alt="Foto Profil">
+                    <img src="{{ asset('storage/' . $user->foto_profil) }}" class="avatar" alt="Foto">
                 @else
                     <div class="avatar">{{ substr($user->name, 0, 1) }}</div>
                 @endif
                 <div>
-                    <h3 class="font-bold">{{ $user->name }}</h3>
-                    <p style="font-size: 0.875rem; opacity: 0.9;">{{ $user->sekolah_universitas }} - {{ $user->jurusan }}</p>
+                    <strong>{{ $user->name }}</strong>
+                    <span>Peserta PKL</span>
                 </div>
             </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" style="color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <button type="submit" class="student-logout" title="Keluar">
                     <i class="ph ph-sign-out"></i>
                 </button>
             </form>
         </div>
-        <div class="mt-4">
-            <p style="font-size: 0.875rem; opacity: 0.9;">Divisi: {{ $user->divisi }} | Pembimbing: {{ $user->pembimbing }}</p>
-            <p style="font-size: 0.875rem; opacity: 0.9;">Periode: {{ date('d M Y', strtotime($user->tgl_mulai)) }} - {{ date('d M Y', strtotime($user->tgl_selesai)) }}</p>
-        </div>
     </div>
 
-    <div class="mobile-content">
-        <div class="card mb-4">
-            <h4 class="mb-2">Status Absensi Hari Ini</h4>
-            <p class="text-secondary" style="font-size: 0.875rem;">{{ date('l, d F Y') }}</p>
-            
-            <div class="d-flex justify-between mt-4">
-                <div class="text-center">
-                    <p class="text-secondary" style="font-size: 0.875rem;">Masuk</p>
-                    <p class="font-bold" style="font-size: 1.25rem;">
-                        {{ $absensiHariIni && $absensiHariIni->jam_masuk ? date('H:i', strtotime($absensiHariIni->jam_masuk)) : '--:--' }}
-                    </p>
-                </div>
-                <div class="text-center">
-                    <p class="text-secondary" style="font-size: 0.875rem;">Pulang</p>
-                    <p class="font-bold" style="font-size: 1.25rem;">
-                        {{ $absensiHariIni && $absensiHariIni->jam_pulang ? date('H:i', strtotime($absensiHariIni->jam_pulang)) : '--:--' }}
-                    </p>
-                </div>
+    <!-- Main Content -->
+    <div class="student-main">
+        <div class="student-topbar">
+            <div>
+                <h1>Dashboard Peserta</h1>
             </div>
-
-            <div class="mt-4 text-center">
-                @if(!$absensiHariIni || (!$absensiHariIni->jam_masuk && $absensiHariIni->status == 'alpa'))
-                    <span class="badge badge-warning">Belum Absen</span>
-                @elseif($absensiHariIni->status == 'hadir')
-                    <span class="badge badge-success">Hadir</span>
-                @else
-                    <span class="badge badge-warning" style="text-transform: capitalize;">{{ $absensiHariIni->status }}</span>
-                @endif
+            <div class="student-date">
+                <i class="ph ph-calendar-blank"></i>
+                <span class="font-semibold">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</span>
+                <span class="student-divider">|</span>
+                <i class="ph ph-clock"></i>
+                <span id="realtime-clock" class="font-bold text-primary">--:--:-- WIB</span>
             </div>
         </div>
 
-        <div class="action-grid">
-            <a href="{{ route('peserta.absen', ['type' => 'masuk']) }}" class="action-card" {!! ($absensiHariIni && $absensiHariIni->jam_masuk) || ($absensiHariIni && $absensiHariIni->status != 'alpa' && $absensiHariIni->status != 'hadir') ? 'style="opacity:0.5; pointer-events:none;"' : '' !!}>
-                <i class="ph ph-sign-in"></i>
-                <span>Absen Masuk</span>
-            </a>
-            <a href="{{ route('peserta.absen', ['type' => 'pulang']) }}" class="action-card" {!! (!$absensiHariIni || !$absensiHariIni->jam_masuk || $absensiHariIni->jam_pulang) ? 'style="opacity:0.5; pointer-events:none;"' : '' !!}>
-                <i class="ph ph-sign-out"></i>
-                <span>Absen Pulang</span>
-            </a>
-            <a href="{{ route('peserta.izin_sakit') }}" class="action-card">
-                <i class="ph ph-envelope-simple"></i>
-                <span>Izin</span>
-            </a>
-            <a href="{{ route('peserta.izin_sakit') }}?type=sakit" class="action-card">
-                <i class="ph ph-first-aid"></i>
-                <span>Sakit</span>
-            </a>
-        </div>
-    </div>
+        <div class="student-content">
+            <!-- Welcome Hero -->
+            <div class="hero-card mb-4">
+                <div class="hero-content">
+                    <div class="hero-eyebrow">SELAMAT DATANG</div>
+                    <h2>Halo, {{ $user->name }}! 👋</h2>
+                    <p class="hero-school">{{ $user->sekolah_universitas ?: 'Sekolah/Kampus belum ditentukan' }}</p>
+                    
+                    <div class="hero-details">
+                        <div class="hero-detail-item">
+                            <i class="ph ph-buildings"></i>
+                            <div>
+                                <span>Penempatan:</span>
+                                <strong>{{ $user->divisi ?: 'Belum ditentukan' }}</strong>
+                            </div>
+                        </div>
+                        <div class="hero-detail-item">
+                            <i class="ph ph-user"></i>
+                            <div>
+                                <span>Pembimbing:</span>
+                                <strong>{{ $user->pembimbing ?: '-' }}</strong>
+                            </div>
+                        </div>
+                        <div class="hero-detail-item">
+                            <i class="ph ph-calendar"></i>
+                            <div>
+                                <span>Periode PKL:</span>
+                                <strong>
+                                    @if($tglMulai && $tglSelesai)
+                                        {{ $tglMulai->format('d M Y') }} - {{ $tglSelesai->format('d M Y') }}
+                                    @else
+                                        Belum ditentukan
+                                    @endif
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-illustration">
+                    <img src="{{ asset('img/hero-illustration.jpg') }}" alt="Ilustrasi Peserta PKL">
+                </div>
+            </div>
 
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-        <a href="{{ route('peserta.dashboard') }}" class="nav-item active">
-            <i class="ph ph-house"></i>
-            <span>Home</span>
-        </a>
-        <a href="{{ route('peserta.riwayat') }}" class="nav-item">
-            <i class="ph ph-clock-counter-clockwise"></i>
-            <span>Riwayat</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="ph ph-user"></i>
-            <span>Profil</span>
-        </a>
+            <!-- CSS Grid Layout for content -->
+            <div class="dash-layout">
+                <!-- Left Column -->
+                <div class="dash-col-main">
+                    
+                    <!-- Aktivitas Hari Ini -->
+                    <div class="section-title">Aktivitas Hari Ini</div>
+                    <div class="modern-card activity-bar mb-4">
+                        <div class="activity-item">
+                            <span class="activity-label">Status Presensi</span>
+                            <div class="activity-value">
+                                @if(!$absensiHariIni || (!$absensiHariIni->jam_masuk && $absensiHariIni->status == 'alpa'))
+                                    <span class="status-badge badge-gray"><i class="ph ph-minus"></i> Belum Presensi</span>
+                                @elseif($absensiHariIni->status == 'hadir')
+                                    <span class="status-badge badge-green"><i class="ph ph-check-circle"></i> Hadir</span>
+                                @elseif($absensiHariIni->status == 'izin')
+                                    <span class="status-badge badge-amber"><i class="ph ph-clock"></i> Izin</span>
+                                @elseif($absensiHariIni->status == 'sakit')
+                                    <span class="status-badge badge-red"><i class="ph ph-warning-circle"></i> Sakit</span>
+                                @else
+                                    <span class="status-badge badge-gray" style="text-transform: capitalize;">{{ $absensiHariIni->status }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="activity-divider"></div>
+                        <div class="activity-item">
+                            <span class="activity-label">Jam Masuk</span>
+                            <strong class="activity-time">{{ $absensiHariIni && $absensiHariIni->jam_masuk ? date('H:i', strtotime($absensiHariIni->jam_masuk)) . ' WIB' : '--:--' }}</strong>
+                        </div>
+                        <div class="activity-divider"></div>
+                        <div class="activity-item">
+                            <span class="activity-label">Jam Pulang</span>
+                            <strong class="activity-time">{{ $absensiHariIni && $absensiHariIni->jam_pulang ? date('H:i', strtotime($absensiHariIni->jam_pulang)) . ' WIB' : '--:--' }}</strong>
+                        </div>
+                        <div class="activity-divider"></div>
+                        <div class="activity-item">
+                            <span class="activity-label">Durasi Kehadiran</span>
+                            <strong class="activity-time">{{ $durasi }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Menu Cepat -->
+                    <div class="section-title">Menu Cepat</div>
+                    <div class="quick-menu-grid mb-4">
+                        <!-- Presensi Masuk Card -->
+                        <div class="quick-card {{ ($absensiHariIni && $absensiHariIni->jam_masuk) || ($absensiHariIni && $absensiHariIni->status != 'alpa' && $absensiHariIni->status != 'hadir') ? 'disabled' : '' }}">
+                            <div class="quick-icon-wrapper">
+                                <i class="ph ph-sign-in"></i>
+                            </div>
+                            <div class="quick-info">
+                                <h3>Presensi Masuk</h3>
+                                <p>Catat waktu masuk kegiatan PKL</p>
+                            </div>
+                            <a href="{{ route('peserta.absen', ['type' => 'masuk']) }}" class="btn-quick">
+                                Presensi Masuk &rarr;
+                            </a>
+                        </div>
+                        
+                        <!-- Presensi Pulang Card -->
+                        <div class="quick-card {{ (!$absensiHariIni || !$absensiHariIni->jam_masuk || $absensiHariIni->jam_pulang) ? 'disabled' : '' }}">
+                            <div class="quick-icon-wrapper">
+                                <i class="ph ph-sign-out"></i>
+                            </div>
+                            <div class="quick-info">
+                                <h3>Presensi Pulang</h3>
+                                <p>Catat waktu pulang kegiatan PKL</p>
+                            </div>
+                            <a href="{{ route('peserta.absen', ['type' => 'pulang']) }}" class="btn-quick">
+                                Presensi Pulang &rarr;
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Aktivitas -->
+                    <div class="section-title">Timeline Aktivitas</div>
+                    <div class="modern-card timeline-card">
+                        @if(!$absensiHariIni || (!$absensiHariIni->jam_masuk && !$absensiHariIni->jam_pulang))
+                            <div class="empty-state">
+                                <i class="ph ph-clock-dashed"></i>
+                                <p>Belum ada aktivitas hari ini.</p>
+                            </div>
+                        @else
+                            <div class="timeline">
+                                @if($absensiHariIni->jam_masuk)
+                                <div class="timeline-item">
+                                    <div class="timeline-time">{{ date('H:i', strtotime($absensiHariIni->jam_masuk)) }}</div>
+                                    <div class="timeline-marker success"><i class="ph ph-check"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Presensi Masuk</h4>
+                                        <p>Mulai kegiatan PKL</p>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($absensiHariIni->jam_pulang)
+                                <div class="timeline-item">
+                                    <div class="timeline-time">{{ date('H:i', strtotime($absensiHariIni->jam_pulang)) }}</div>
+                                    <div class="timeline-marker success"><i class="ph ph-check"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Presensi Pulang</h4>
+                                        <p>Selesai kegiatan PKL</p>
+                                    </div>
+                                </div>
+                                @else
+                                <div class="timeline-item">
+                                    <div class="timeline-time">--:--</div>
+                                    <div class="timeline-marker pending"><i class="ph ph-dots-three"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Presensi Pulang</h4>
+                                        <p>Belum dilakukan</p>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                    
+                </div>
+                
+                <!-- Right Column -->
+                <div class="dash-col-side">
+                    
+                    <!-- Verifikasi Lokasi -->
+                    <div class="section-title">Verifikasi Lokasi</div>
+                    <div class="modern-card location-card mb-4">
+                        <div class="loc-icon"><i class="ph ph-map-pin"></i></div>
+                        <div class="loc-status">
+                            <span class="status-badge badge-gray"><i class="ph ph-warning-circle"></i> Lokasi belum diverifikasi</span>
+                        </div>
+                        <p>Fitur verifikasi lokasi sedang dalam tahap pengembangan.</p>
+                        <button class="btn-outline-loc" disabled>Lihat Lokasi</button>
+                    </div>
+
+                    <!-- Ringkasan Kehadiran -->
+                    <div class="section-title">Ringkasan Kehadiran</div>
+                    <div class="modern-card summary-card mb-4">
+                        <div class="summary-grid">
+                            <div class="sum-box hadir">
+                                <span>Hadir</span>
+                                <strong>{{ $hadir ?: 0 }}</strong>
+                            </div>
+                            <div class="sum-box izin">
+                                <span>Izin</span>
+                                <strong>{{ $izin ?: 0 }}</strong>
+                            </div>
+                            <div class="sum-box sakit">
+                                <span>Sakit</span>
+                                <strong>{{ $sakit ?: 0 }}</strong>
+                            </div>
+                            <div class="sum-box total">
+                                <span>Total Hari</span>
+                                <strong>{{ $totalHari ?: 0 }}</strong>
+                            </div>
+                        </div>
+                        <div class="progress-wrap mt-4">
+                            <div class="progress-header">
+                                <strong>{{ $persentase }}%</strong>
+                                <span>Persentase Kehadiran</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ $persentase }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informasi PKL -->
+                    <div class="section-title">Informasi PKL</div>
+                    <div class="modern-card info-card mb-4">
+                        <ul class="info-list">
+                            <li>
+                                <i class="ph ph-buildings"></i>
+                                <div>
+                                    <span>Instansi</span>
+                                    <strong>Kecamatan Cikampek</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="ph ph-map-trifold"></i>
+                                <div>
+                                    <span>Penempatan</span>
+                                    <strong>{{ $user->divisi ?: 'Belum ditentukan' }}</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="ph ph-user"></i>
+                                <div>
+                                    <span>Pembimbing</span>
+                                    <strong>{{ $user->pembimbing ?: '-' }}</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="ph ph-calendar"></i>
+                                <div>
+                                    <span>Periode PKL</span>
+                                    <strong>
+                                        @if($tglMulai && $tglSelesai)
+                                            {{ $tglMulai->format('d M Y') }} - {{ $tglSelesai->format('d M Y') }}
+                                        @else
+                                            Belum ditentukan
+                                        @endif
+                                    </strong>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="ph ph-hourglass-high"></i>
+                                <div>
+                                    <span>Sisa Hari PKL</span>
+                                    <strong>{{ $sisaHari > 0 ? $sisaHari . ' Hari' : '-' }}</strong>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Pengingat -->
+                    <div class="reminder-card mb-4">
+                        <i class="ph ph-bell-ringing"></i>
+                        <div>
+                            <strong>Pengingat</strong>
+                            <p>
+                                @if(!$absensiHariIni || !$absensiHariIni->jam_masuk)
+                                    Jangan lupa melakukan presensi masuk sebelum memulai kegiatan PKL.
+                                @elseif(!$absensiHariIni->jam_pulang)
+                                    Jangan lupa melakukan presensi pulang setelah kegiatan PKL selesai.
+                                @else
+                                    Presensi hari ini telah selesai. Selamat beristirahat!
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        const clockElem = document.getElementById('realtime-clock');
+        if (clockElem) {
+            clockElem.innerText = `${hours}:${minutes}:${seconds} WIB`;
+        }
+    }
+    
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
+@endpush
