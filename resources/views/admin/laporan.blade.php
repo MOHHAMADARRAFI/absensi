@@ -33,6 +33,16 @@
                     style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
                     
                     <div>
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem;">Peserta</label>
+                        <select name="peserta_id" id="pesertaId" class="form-control" style="width: auto; min-width: 150px; padding: 0.5rem 0.875rem;">
+                            <option value="semua" {{ $pesertaId == 'semua' ? 'selected' : '' }}>Semua Peserta</option>
+                            @foreach($semuaPeserta as $p)
+                                <option value="{{ $p->id }}" {{ $pesertaId == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
                         <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem;">Tipe Filter</label>
                         <select name="tipe_filter" id="tipeFilter" class="form-control" style="width: auto; min-width: 150px; padding: 0.5rem 0.875rem;" onchange="changeFilterInput()">
                             <option value="hari" {{ $tipeFilter == 'hari' ? 'selected' : '' }}>Per Hari</option>
@@ -55,9 +65,9 @@
                         <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;" onclick="updateActualValue()">
                             <i class="ph ph-funnel"></i> Tampilkan
                         </button>
-                        <a href="{{ route('admin.laporan.cetak', ['tipe_filter' => $tipeFilter, 'filter_value' => $filterValue]) }}" target="_blank" class="btn btn-outline" style="padding: 0.5rem 1.25rem; font-size: 0.875rem; border-color: #059669; color: #059669;">
+                        <button type="button" onclick="cetakLaporan()" class="btn btn-outline" style="padding: 0.5rem 1.25rem; font-size: 0.875rem; border-color: #059669; color: #059669;">
                             <i class="ph ph-printer"></i> Cetak PDF
-                        </a>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -170,6 +180,16 @@ function updateActualValue() {
     } else {
         actual.value = document.getElementById('filterBulan').value;
     }
+}
+
+function cetakLaporan() {
+    updateActualValue();
+    var tipeFilter = document.getElementById('tipeFilter').value;
+    var filterValue = document.getElementById('actualFilterValue').value;
+    var pesertaId = document.getElementById('pesertaId').value;
+    
+    var url = "{{ route('admin.laporan.cetak') }}?tipe_filter=" + tipeFilter + "&filter_value=" + filterValue + "&peserta_id=" + pesertaId;
+    window.open(url, '_blank');
 }
 </script>
 @endsection

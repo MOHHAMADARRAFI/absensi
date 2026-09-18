@@ -70,80 +70,166 @@
         <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background: #059669; color: white; border: none; border-radius: 5px;">Cetak Dokumen</button>
     </div>
 
-    <div class="header">
-        <h1>Laporan Kehadiran Peserta PKL</h1>
-        <p>Sistem Informasi Absensi PKL Kecamatan Cikampek</p>
-    </div>
+    @if(isset($pesertaId) && $pesertaId !== 'semua')
+        @forelse($data as $i => $item)
+        <div class="page-break">
+            <div class="header">
+                <h1>Laporan Kehadiran Peserta PKL</h1>
+                <p>Sistem Informasi Absensi PKL Kecamatan Cikampek</p>
+            </div>
 
-    <div class="info-section">
-        <table>
-            <tr>
-                <td style="border: none; width: 150px;"><strong>Periode Laporan</strong></td>
-                <td style="border: none;">: 
-                    @if($tipeFilter == 'hari')
-                        {{ \Carbon\Carbon::parse($filterValue)->locale('id')->isoFormat('D MMMM YYYY') }}
-                    @elseif($tipeFilter == 'minggu')
-                        Minggu {{ substr($filterValue, -2) }}, Tahun {{ substr($filterValue, 0, 4) }}
-                    @else
-                        {{ \Carbon\Carbon::createFromFormat('Y-m', $filterValue)->locale('id')->isoFormat('MMMM YYYY') }}
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td style="border: none;"><strong>Tanggal Dicetak</strong></td>
-                <td style="border: none;">: {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }} WIB</td>
-            </tr>
-        </table>
-    </div>
+            <div class="info-section">
+                <table>
+                    <tr>
+                        <td style="border: none; width: 180px;"><strong>Nama Peserta</strong></td>
+                        <td style="border: none;">: {{ $item['peserta']->name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none;"><strong>NIS/NIM</strong></td>
+                        <td style="border: none;">: {{ $item['peserta']->nis_nim ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none;"><strong>Divisi</strong></td>
+                        <td style="border: none;">: {{ $item['peserta']->divisi ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none;"><strong>Periode Laporan</strong></td>
+                        <td style="border: none;">: 
+                            @if($tipeFilter == 'hari')
+                                {{ \Carbon\Carbon::parse($filterValue)->locale('id')->isoFormat('D MMMM YYYY') }}
+                            @elseif($tipeFilter == 'minggu')
+                                Minggu {{ substr($filterValue, -2) }}, Tahun {{ substr($filterValue, 0, 4) }}
+                            @else
+                                {{ \Carbon\Carbon::createFromFormat('Y-m', $filterValue)->locale('id')->isoFormat('MMMM YYYY') }}
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: none;"><strong>Tanggal Dicetak</strong></td>
+                        <td style="border: none;">: {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }} WIB</td>
+                    </tr>
+                </table>
+            </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 25%;">Nama Peserta</th>
-                <th style="width: 15%;">Divisi</th>
-                <th style="width: 10%;">Hadir</th>
-                <th style="width: 10%;">Izin</th>
-                <th style="width: 10%;">Sakit</th>
-                <th style="width: 10%;">Alpa</th>
-                <th style="width: 15%;">% Kehadiran</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($data as $i => $item)
-            @php
-                $persen = $item['total'] > 0
-                    ? round(($item['hadir'] / $item['total']) * 100)
-                    : 0;
-            @endphp
-            <tr>
-                <td class="text-center">{{ $i + 1 }}</td>
-                <td>
-                    <strong>{{ $item['peserta']->name }}</strong><br>
-                    <span style="font-size: 12px; color: #555;">{{ $item['peserta']->nis_nim }}</span>
-                </td>
-                <td>{{ $item['peserta']->divisi ?? '-' }}</td>
-                <td class="text-center">{{ $item['hadir'] }}</td>
-                <td class="text-center">{{ $item['izin'] }}</td>
-                <td class="text-center">{{ $item['sakit'] }}</td>
-                <td class="text-center">{{ $item['alpa'] }}</td>
-                <td class="text-center">{{ $persen }}%</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="text-center" style="padding: 20px;">Tidak ada data pada periode ini.</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">Hadir</th>
+                        <th style="width: 20%;">Izin</th>
+                        <th style="width: 20%;">Sakit</th>
+                        <th style="width: 20%;">Alpa</th>
+                        <th style="width: 20%;">% Kehadiran</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $persen = $item['total'] > 0
+                            ? round(($item['hadir'] / $item['total']) * 100)
+                            : 0;
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $item['hadir'] }}</td>
+                        <td class="text-center">{{ $item['izin'] }}</td>
+                        <td class="text-center">{{ $item['sakit'] }}</td>
+                        <td class="text-center">{{ $item['alpa'] }}</td>
+                        <td class="text-center">{{ $persen }}%</td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <div class="footer">
-        <p>Cikampek, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') }}</p>
-        <p style="margin-top: 10px;">Admin SIAP PKL,</p>
-        <div class="signature-area">
-            <p>_______________________</p>
+            <div class="footer">
+                <p>Cikampek, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') }}</p>
+                <p style="margin-top: 10px;">Admin SIAP PKL,</p>
+                <div class="signature-area">
+                    <p>_______________________</p>
+                </div>
+            </div>
         </div>
-    </div>
+        @empty
+        <div class="header">
+            <h1>Laporan Kehadiran Peserta PKL</h1>
+            <p>Sistem Informasi Absensi PKL Kecamatan Cikampek</p>
+        </div>
+        <div class="text-center" style="padding: 50px;">
+            <p>Tidak ada data peserta.</p>
+        </div>
+        @endforelse
+    @else
+        <div class="header">
+            <h1>Laporan Kehadiran Peserta PKL</h1>
+            <p>Sistem Informasi Absensi PKL Kecamatan Cikampek</p>
+        </div>
+
+        <div class="info-section">
+            <table>
+                <tr>
+                    <td style="border: none; width: 150px;"><strong>Periode Laporan</strong></td>
+                    <td style="border: none;">: 
+                        @if($tipeFilter == 'hari')
+                            {{ \Carbon\Carbon::parse($filterValue)->locale('id')->isoFormat('D MMMM YYYY') }}
+                        @elseif($tipeFilter == 'minggu')
+                            Minggu {{ substr($filterValue, -2) }}, Tahun {{ substr($filterValue, 0, 4) }}
+                        @else
+                            {{ \Carbon\Carbon::createFromFormat('Y-m', $filterValue)->locale('id')->isoFormat('MMMM YYYY') }}
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: none;"><strong>Tanggal Dicetak</strong></td>
+                    <td style="border: none;">: {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }} WIB</td>
+                </tr>
+            </table>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 25%;">Nama Peserta</th>
+                    <th style="width: 15%;">Divisi</th>
+                    <th style="width: 10%;">Hadir</th>
+                    <th style="width: 10%;">Izin</th>
+                    <th style="width: 10%;">Sakit</th>
+                    <th style="width: 10%;">Alpa</th>
+                    <th style="width: 15%;">% Kehadiran</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($data as $i => $item)
+                @php
+                    $persen = $item['total'] > 0
+                        ? round(($item['hadir'] / $item['total']) * 100)
+                        : 0;
+                @endphp
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>
+                        <strong>{{ $item['peserta']->name }}</strong><br>
+                        <span style="font-size: 12px; color: #555;">{{ $item['peserta']->nis_nim }}</span>
+                    </td>
+                    <td>{{ $item['peserta']->divisi ?? '-' }}</td>
+                    <td class="text-center">{{ $item['hadir'] }}</td>
+                    <td class="text-center">{{ $item['izin'] }}</td>
+                    <td class="text-center">{{ $item['sakit'] }}</td>
+                    <td class="text-center">{{ $item['alpa'] }}</td>
+                    <td class="text-center">{{ $persen }}%</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="8" class="text-center" style="padding: 20px;">Tidak ada data pada periode ini.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Cikampek, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') }}</p>
+            <p style="margin-top: 10px;">Admin SIAP PKL,</p>
+            <div class="signature-area">
+                <p>_______________________</p>
+            </div>
+        </div>
+    @endif
 
 </body>
 </html>

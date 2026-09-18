@@ -112,9 +112,13 @@ class AdminController extends Controller
         return back()->with('success', 'Status pengajuan berhasil diperbarui.');
     }
 
-    private function getLaporanData($tipeFilter, $filterValue)
+    private function getLaporanData($tipeFilter, $filterValue, $pesertaId = 'semua')
     {
-        $peserta = User::where('role', 'peserta')->orderBy('name')->get();
+        $queryPeserta = User::where('role', 'peserta')->orderBy('name');
+        if ($pesertaId !== 'semua') {
+            $queryPeserta->where('id', $pesertaId);
+        }
+        $peserta = $queryPeserta->get();
         $data = [];
 
         foreach ($peserta as $p) {
@@ -153,20 +157,23 @@ class AdminController extends Controller
     {
         $tipeFilter = $request->input('tipe_filter', 'bulan');
         $filterValue = $request->input('filter_value', now()->format('Y-m'));
+        $pesertaId = $request->input('peserta_id', 'semua');
 
-        $data = $this->getLaporanData($tipeFilter, $filterValue);
+        $data = $this->getLaporanData($tipeFilter, $filterValue, $pesertaId);
+        $semuaPeserta = User::where('role', 'peserta')->orderBy('name')->get();
         
-        return view('admin.laporan', compact('data', 'tipeFilter', 'filterValue'));
+        return view('admin.laporan', compact('data', 'tipeFilter', 'filterValue', 'pesertaId', 'semuaPeserta'));
     }
 
     public function cetakLaporan(Request $request)
     {
         $tipeFilter = $request->input('tipe_filter', 'bulan');
         $filterValue = $request->input('filter_value', now()->format('Y-m'));
+        $pesertaId = $request->input('peserta_id', 'semua');
 
-        $data = $this->getLaporanData($tipeFilter, $filterValue);
+        $data = $this->getLaporanData($tipeFilter, $filterValue, $pesertaId);
 
-        return view('admin.laporan_cetak', compact('data', 'tipeFilter', 'filterValue'));
+        return view('admin.laporan_cetak', compact('data', 'tipeFilter', 'filterValue', 'pesertaId'));
     }
 
     public function pengaturan()
