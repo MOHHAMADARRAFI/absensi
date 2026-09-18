@@ -1751,9 +1751,9 @@ th:last-child {
 .hero-illustration {
     position: absolute;
     top: 0;
-    right: 0;
+    right: -2rem;
     bottom: 0;
-    width: 60%;
+    width: 55%;
     z-index: 1;
     display: flex;
 }
@@ -1762,7 +1762,7 @@ th:last-child {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: right center;
+    object-position: right bottom;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);
     mask-image: linear-gradient(to right, transparent 0%, black 40%);
     mix-blend-mode: lighten;
@@ -1779,9 +1779,11 @@ th:last-child {
     .dash-layout {
         grid-template-columns: 1fr;
     }
+
     .hero-content {
         max-width: 100%;
     }
+
     .hero-illustration {
         opacity: 0.3;
     }
@@ -2335,8 +2337,10 @@ th:last-child {
 }
 
 @media (max-width: 992px) {
+
     /* Sidebars */
-    .student-sidebar, .sidebar {
+    .student-sidebar,
+    .sidebar {
         position: fixed;
         left: -320px;
         top: 0;
@@ -2345,19 +2349,24 @@ th:last-child {
         transition: left 0.3s ease;
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
     }
-    .student-sidebar.show, .sidebar.show {
+
+    .student-sidebar.show,
+    .sidebar.show {
         left: 0;
     }
-    
+
     /* Main Content Margins */
-    .student-main, .main-content {
+    .student-main,
+    .main-content {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 5rem 1rem 1rem 1rem !important; /* give space for mobile header and side padding */
+        padding: 5rem 1rem 1rem 1rem !important;
+        /* give space for mobile header and side padding */
     }
-    
+
     /* Mobile Headers / Topbars */
-    .student-topbar, .dashboard-header {
+    .student-topbar,
+    .dashboard-header {
         position: fixed !important;
         top: 0;
         left: 0;
@@ -2365,7 +2374,7 @@ th:last-child {
         z-index: 900;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         padding: 1rem 1.5rem !important;
         border-radius: 0 !important;
         margin: 0 !important;
@@ -2373,7 +2382,7 @@ th:last-child {
         align-items: center;
         gap: 1rem;
     }
-    
+
     .mobile-menu-toggle {
         display: flex !important;
         align-items: center;
@@ -2385,7 +2394,7 @@ th:last-child {
         cursor: pointer;
         padding: 0;
     }
-    
+
     .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -2399,49 +2408,57 @@ th:last-child {
         opacity: 0;
         transition: opacity 0.3s ease;
     }
+
     .sidebar-overlay.show {
         display: block;
         opacity: 1;
     }
-    
+
     /* Fix Grids */
-    .student-grid, .dashboard-stats, .laporan-grid {
+    .student-grid,
+    .dashboard-stats,
+    .laporan-grid {
         grid-template-columns: 1fr !important;
         gap: 1rem;
     }
-    
+
     .hero-card {
         flex-direction: column;
         text-align: center;
         padding: 1.5rem !important;
     }
-    
+
     .hero-details {
         flex-direction: column;
         align-items: center;
         gap: 1rem;
     }
+
     .hero-detail-item {
         width: 100%;
         justify-content: center;
     }
-    
+
     .hero-illustration {
         display: none !important;
     }
-    
+
     /* Table Responsive */
-    .table-container, .card-body {
+    .table-container,
+    .card-body {
         overflow-x: auto;
     }
-    
+
     /* Hide some info on mobile topbar */
     .student-date .font-semibold {
-        display: none; /* hide long text date */
+        display: none;
+        /* hide long text date */
     }
+
     .student-divider {
         display: none;
     }
+
     .student-date {
         margin-left: auto;
     }
