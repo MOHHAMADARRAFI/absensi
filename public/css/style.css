@@ -1693,6 +1693,7 @@ th:last-child {
     position: relative;
     z-index: 2;
     flex: 1;
+    max-width: 55%;
 }
 
 .hero-eyebrow {
@@ -1777,6 +1778,12 @@ th:last-child {
 @media (max-width: 992px) {
     .dash-layout {
         grid-template-columns: 1fr;
+    }
+    .hero-content {
+        max-width: 100%;
+    }
+    .hero-illustration {
+        opacity: 0.3;
     }
 }
 
