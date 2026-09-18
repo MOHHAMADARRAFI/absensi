@@ -79,6 +79,7 @@
     .timeline-page-content-wrapper {
         flex-grow: 1;
         padding-left: 1.5rem;
+        min-width: 0; /* Ensures child elements don't overflow */
     }
 
     .timeline-page-card {
@@ -87,11 +88,12 @@
         border-radius: 16px;
         padding: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        transition: all 0.2s;
+        transition: all 0.2s ease-in-out;
     }
     .timeline-page-card:hover {
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
         border-color: #CBD5E1;
+        transform: translateY(-2px);
     }
 
     .tp-header {
@@ -115,6 +117,7 @@
         display: flex;
         gap: 1rem;
         margin-top: 0.75rem;
+        flex-wrap: wrap;
     }
     .tp-time-box {
         display: flex;
@@ -123,6 +126,8 @@
         padding: 0.5rem 0.75rem;
         border-radius: 8px;
         border: 1px solid #F1F5F9;
+        flex: 1;
+        min-width: 100px;
     }
     .tp-time-box span { font-size: 0.7rem; color: #64748B; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
     .tp-time-box strong { font-size: 1rem; color: #1E293B; }
@@ -154,6 +159,7 @@
         border-top: 1px solid #F1F5F9;
         display: flex;
         gap: 0.75rem;
+        flex-wrap: wrap;
     }
 
     /* Modal Styles */
@@ -208,6 +214,55 @@
     }
     .custom-modal-footer {
         display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .timeline-page-item {
+            flex-direction: column;
+            align-items: stretch;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-page-date {
+            width: auto;
+            text-align: left;
+            padding-right: 0;
+            padding-top: 0;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+        .timeline-page-date .day {
+            font-size: 1.25rem;
+        }
+        .timeline-page-date .month {
+            margin-top: 0;
+            font-size: 0.9rem;
+        }
+        .timeline-page-divider {
+            display: none;
+        }
+        .timeline-page-content-wrapper {
+            padding-left: 0;
+        }
+        .timeline-page-card {
+            padding: 1.25rem;
+            position: relative;
+        }
+        .tp-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .tp-title {
+            font-size: 1rem;
+        }
+        .tp-header > div:last-child {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+        }
     }
 </style>
 @endpush
