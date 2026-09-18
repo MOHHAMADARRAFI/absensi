@@ -105,6 +105,7 @@
                     <input type="text" class="form-control" value="{{ Auth::user()->name }}" readonly style="background-color: #F8FAFC; color: #475569;">
                 </div>
 
+                @if($type === 'masuk')
                 <!-- Keterangan Selector -->
                 <label class="form-label">Keterangan</label>
                 <div class="keterangan-selector">
@@ -117,6 +118,7 @@
                     <input type="radio" id="ket_sakit" name="keterangan_type" value="sakit" onchange="toggleForm()">
                     <label for="ket_sakit">Sakit</label>
                 </div>
+                @endif
 
                 <!-- FORM HADIR -->
                 <form id="form-hadir" method="POST" action="{{ $type === 'masuk' ? route('absen.masuk') : route('absen.pulang') }}">
@@ -161,6 +163,7 @@
                     </button>
                 </form>
 
+                @if($type === 'masuk')
                 <!-- FORM IZIN/SAKIT -->
                 <form id="form-izin-sakit" method="POST" action="{{ route('peserta.submit_izin_sakit') }}" enctype="multipart/form-data" style="display: none;">
                     @csrf
@@ -189,6 +192,7 @@
                         <span>Kirim Pengajuan</span>
                     </button>
                 </form>
+                @endif
 
             </div>
         </div>
@@ -324,27 +328,31 @@
     }
 
     function toggleForm() {
-        const val = document.querySelector('input[name="keterangan_type"]:checked').value;
+        const checkedEl = document.querySelector('input[name="keterangan_type"]:checked');
+        if (!checkedEl) return;
+        const val = checkedEl.value;
         const formHadir = document.getElementById('form-hadir');
         const formIzinSakit = document.getElementById('form-izin-sakit');
         const inputJenis = document.getElementById('inputJenis');
-        const btnIzinSakit = formIzinSakit.querySelector('button[type="submit"]');
+        const btnIzinSakit = formIzinSakit ? formIzinSakit.querySelector('button[type="submit"]') : null;
 
         if(val === 'hadir') {
-            formHadir.style.display = 'block';
-            formIzinSakit.style.display = 'none';
+            if(formHadir) formHadir.style.display = 'block';
+            if(formIzinSakit) formIzinSakit.style.display = 'none';
             if(!stream) startCamera();
             if(absenType === 'masuk') setTimeout(() => { if(map) map.invalidateSize(); }, 200);
         } else {
-            formHadir.style.display = 'none';
-            formIzinSakit.style.display = 'block';
-            inputJenis.value = val;
-            if(val === 'sakit') {
-                btnIzinSakit.className = 'btn w-100 btn-danger';
-                btnIzinSakit.innerHTML = '<i class="ph ph-first-aid"></i><span>Kirim Pengajuan Sakit</span>';
-            } else {
-                btnIzinSakit.className = 'btn w-100 btn-warning';
-                btnIzinSakit.innerHTML = '<i class="ph ph-envelope-simple"></i><span>Kirim Pengajuan Izin</span>';
+            if(formHadir) formHadir.style.display = 'none';
+            if(formIzinSakit) formIzinSakit.style.display = 'block';
+            if(inputJenis) inputJenis.value = val;
+            if(btnIzinSakit) {
+                if(val === 'sakit') {
+                    btnIzinSakit.className = 'btn w-100 btn-danger';
+                    btnIzinSakit.innerHTML = '<i class="ph ph-first-aid"></i><span>Kirim Pengajuan Sakit</span>';
+                } else {
+                    btnIzinSakit.className = 'btn w-100 btn-warning';
+                    btnIzinSakit.innerHTML = '<i class="ph ph-envelope-simple"></i><span>Kirim Pengajuan Izin</span>';
+                }
             }
             stopCamera();
         }
@@ -386,6 +394,12 @@
     }
 
     function submitAbsen() {
+        const formHadir = document.getElementById('form-hadir');
+        if (formHadir && !formHadir.checkValidity()) {
+            formHadir.reportValidity();
+            return;
+        }
+
         if (!stream) {
             alert('Kamera belum aktif.');
             return;
@@ -413,11 +427,12 @@
         stopCamera();
         if(watchId) navigator.geolocation.clearWatch(watchId);
         
-        document.getElementById('form-hadir').submit();
+        formHadir.submit();
     }
 
     window.addEventListener('load', function() {
-        if(document.querySelector('input[name="keterangan_type"]:checked').value === 'hadir') {
+        const ketChecked = document.querySelector('input[name="keterangan_type"]:checked');
+        if(!ketChecked || ketChecked.value === 'hadir') {
             startCamera();
             initMap();
         }
