@@ -95,8 +95,10 @@
                                 <th>Peserta</th>
                                 <th>Divisi</th>
                                 <th style="text-align: center; color: #059669;">Hadir</th>
-                                <th style="text-align: center; color: #D97706;">Izin</th>
+                                <th style="text-align: center; color: #d97706;">Terlambat</th>
+                                <th style="text-align: center; color: #0284c7;">Izin</th>
                                 <th style="text-align: center; color: #DC2626;">Sakit</th>
+                                <th style="text-align: center; color: #e11d48;">Tidak Hadir</th>
                                 <th style="text-align: center; color: #64748B;">Alpa</th>
                                 <th style="text-align: center;">% Kehadiran</th>
                             </tr>
@@ -104,8 +106,9 @@
                         <tbody>
                             @forelse($data as $i => $item)
                             @php
+                                $jumlahHadir = $item['hadir'] + $item['terlambat'];
                                 $persen = $item['total'] > 0
-                                    ? round(($item['hadir'] / $item['total']) * 100)
+                                    ? round(($jumlahHadir / $item['total']) * 100)
                                     : 0;
                                 $warnaBar = $persen >= 80 ? '#22c55e' : ($persen >= 60 ? '#f59e0b' : '#ef4444');
                             @endphp
@@ -127,10 +130,16 @@
                                     <span style="font-weight: 700; color: #059669; font-size: 1rem;">{{ $item['hadir'] }}</span>
                                 </td>
                                 <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #D97706; font-size: 1rem;">{{ $item['izin'] }}</span>
+                                    <span style="font-weight: 700; color: #d97706; font-size: 1rem;">{{ $item['terlambat'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #0284c7; font-size: 1rem;">{{ $item['izin'] }}</span>
                                 </td>
                                 <td style="text-align: center;">
                                     <span style="font-weight: 700; color: #DC2626; font-size: 1rem;">{{ $item['sakit'] }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-weight: 700; color: #e11d48; font-size: 1rem;">{{ $item['tidak_hadir'] }}</span>
                                 </td>
                                 <td style="text-align: center;">
                                     <span style="font-weight: 700; color: #64748B; font-size: 1rem;">{{ $item['alpa'] }}</span>

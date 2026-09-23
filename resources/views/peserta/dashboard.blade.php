@@ -19,12 +19,15 @@
     $hadir = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'hadir')->count();
     $izin = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'izin')->count();
     $sakit = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'sakit')->count();
+    $terlambat = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'terlambat')->count();
+    $tidak_hadir = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'tidak_hadir')->count();
     $alpa = \App\Models\Absensi::where('user_id', $user->id)->where('status', 'alpa')->count();
     
-    $totalDataAbsen = $hadir + $izin + $sakit + $alpa;
+    $totalDataAbsen = $hadir + $terlambat + $izin + $sakit + $tidak_hadir + $alpa;
     $totalHari = $totalDataAbsen; // Use actual recorded days so far instead of estimated total duration
 
-    $persentase = $totalDataAbsen > 0 ? round(($hadir / $totalDataAbsen) * 100) : 0;
+    $jumlahHadir = $hadir + $terlambat;
+    $persentase = $totalHari > 0 ? round(($jumlahHadir / $totalHari) * 100) : 0;
     if($persentase > 100) $persentase = 100;
     
     $durasi = '--';
@@ -115,10 +118,14 @@
                                     <span class="status-badge badge-gray"><i class="ph ph-minus"></i> Belum Presensi</span>
                                 @elseif($absensiHariIni->status == 'hadir')
                                     <span class="status-badge badge-green"><i class="ph ph-check-circle"></i> Hadir</span>
+                                @elseif($absensiHariIni->status == 'terlambat')
+                                    <span class="status-badge badge-warning"><i class="ph ph-warning"></i> Terlambat</span>
                                 @elseif($absensiHariIni->status == 'izin')
                                     <span class="status-badge badge-amber"><i class="ph ph-clock"></i> Izin</span>
                                 @elseif($absensiHariIni->status == 'sakit')
-                                    <span class="status-badge badge-red"><i class="ph ph-warning-circle"></i> Sakit</span>
+                                    <span class="status-badge badge-red"><i class="ph ph-first-aid"></i> Sakit</span>
+                                @elseif($absensiHariIni->status == 'tidak_hadir' || $absensiHariIni->status == 'alpa')
+                                    <span class="status-badge badge-red"><i class="ph ph-x-circle"></i> Tidak Hadir</span>
                                 @else
                                     <span class="status-badge badge-gray" style="text-transform: capitalize;">{{ $absensiHariIni->status }}</span>
                                 @endif
@@ -232,6 +239,10 @@
                                 <span>Hadir</span>
                                 <strong>{{ $hadir ?: 0 }}</strong>
                             </div>
+                            <div class="sum-box warning">
+                                <span>Terlambat</span>
+                                <strong>{{ $terlambat ?: 0 }}</strong>
+                            </div>
                             <div class="sum-box izin">
                                 <span>Izin</span>
                                 <strong>{{ $izin ?: 0 }}</strong>
@@ -239,6 +250,10 @@
                             <div class="sum-box sakit">
                                 <span>Sakit</span>
                                 <strong>{{ $sakit ?: 0 }}</strong>
+                            </div>
+                            <div class="sum-box danger">
+                                <span>Tidak Hadir</span>
+                                <strong>{{ ($tidak_hadir + $alpa) ?: 0 }}</strong>
                             </div>
                             <div class="sum-box total">
                                 <span>Total Hari</span>

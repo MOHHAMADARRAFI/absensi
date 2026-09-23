@@ -23,7 +23,7 @@ class PesertaController extends Controller
         // Statistik kehadiran bulan ini
         $bulanIni = now()->format('Y-m');
         $totalHadir = Absensi::where('user_id', $user->id)
-            ->where('status', 'hadir')
+            ->whereIn('status', ['hadir', 'terlambat'])
             ->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$bulanIni])
             ->count();
         $totalIzin = Absensi::where('user_id', $user->id)
@@ -94,9 +94,22 @@ class PesertaController extends Controller
         $pengaturan = Pengaturan::first();
         $jamMasuk = now()->format('H:i:s');
         $jamBatas = $pengaturan->jam_masuk_batas ?? '08:00:00';
+        $jamBatasTelat = '15:00:00';
+
+        if ($jamMasuk >= $jamBatasTelat) {
+            return back()->with('error', 'Batas waktu absensi masuk telah berakhir. Anda sudah dinyatakan tidak hadir. Silakan hubungi admin jika terjadi kesalahan.');
+        }
+
+        if ($jamMasuk <= $jamBatas) {
+            $absensi->status = 'hadir';
+            $absensi->keterangan = $absensi->keterangan ?? 'Absensi masuk tepat waktu.';
+        } else {
+            $absensi->status = 'terlambat';
+            $absensi->keterangan = $absensi->keterangan ?? 'Absensi masuk terlambat pada pukul ' . date('H:i', strtotime($jamMasuk)) . ' WIB.';
+        }
 
         $absensi->jam_masuk = $jamMasuk;
-        $absensi->status = 'hadir';
+        $absensi->source = 'peserta';
         $absensi->foto_masuk = $fileName;
 
         $absensi->lat_masuk = $request->lat_masuk;
@@ -265,8 +278,10 @@ class PesertaController extends Controller
         $data = [
             'peserta' => Auth::user(),
             'hadir' => $absensi->where('status', 'hadir')->count(),
+            'terlambat' => $absensi->where('status', 'terlambat')->count(),
             'izin' => $absensi->where('status', 'izin')->count(),
             'sakit' => $absensi->where('status', 'sakit')->count(),
+            'tidak_hadir' => $absensi->where('status', 'tidak_hadir')->count(),
             'alpa' => $absensi->where('status', 'alpa')->count(),
             'total' => $absensi->count(),
             'detail_absensi' => $absensi->sortByDesc('tanggal')

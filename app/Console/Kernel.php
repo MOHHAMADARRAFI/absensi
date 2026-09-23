@@ -12,7 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Run our auto-mark-absent command every minute
+        $schedule->command('attendance:auto-mark-absent')
+                 ->everyMinute()
+                 ->timezone('Asia/Jakarta');
     }
 
     /**

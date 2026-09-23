@@ -69,7 +69,7 @@
                             <i class="ph ph-check-circle"></i>
                         </div>
                     </div>
-                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['hadir'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['hadir'] + $data['terlambat'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
                 </div>
 
                 <div class="modern-card">
@@ -84,12 +84,12 @@
 
                 <div class="modern-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <h4 style="font-size: 0.85rem; color: #64748B; font-weight: 600;">Total Alpa</h4>
+                        <h4 style="font-size: 0.85rem; color: #64748B; font-weight: 600;">Total Tidak Hadir & Alpa</h4>
                         <div style="width: 32px; height: 32px; border-radius: 50%; background: #FEE2E2; display: flex; align-items: center; justify-content: center; color: #DC2626;">
                             <i class="ph ph-x-circle"></i>
                         </div>
                     </div>
-                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['alpa'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
+                    <div style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">{{ $data['tidak_hadir'] + $data['alpa'] }} <span style="font-size: 0.85rem; font-weight: 600; color: #94A3B8;">Hari</span></div>
                 </div>
             </div>
 
@@ -125,8 +125,12 @@
                                 <td>
                                     @if($r->status == 'hadir')
                                         <span class="badge badge-success">Hadir</span>
+                                    @elseif($r->status == 'terlambat')
+                                        <span class="badge badge-warning">Terlambat</span>
                                     @elseif($r->status == 'izin' || $r->status == 'sakit')
-                                        <span class="badge badge-warning" style="text-transform: capitalize;">{{ $r->status }}</span>
+                                        <span class="badge badge-info" style="text-transform: capitalize;">{{ $r->status }}</span>
+                                    @elseif($r->status == 'tidak_hadir' || $r->status == 'alpa')
+                                        <span class="badge badge-danger">Tidak Hadir</span>
                                     @else
                                         <span class="badge badge-danger" style="text-transform: capitalize;">{{ $r->status }}</span>
                                     @endif

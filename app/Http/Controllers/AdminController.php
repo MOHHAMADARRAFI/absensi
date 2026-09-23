@@ -14,7 +14,7 @@ class AdminController extends Controller
     {
         $totalPeserta = User::where('role', 'peserta')->count();
         $hadirHariIni = Absensi::whereDate('tanggal', now()->format('Y-m-d'))
-            ->where('status', 'hadir')->count();
+            ->whereIn('status', ['hadir', 'terlambat'])->count();
         $izinHariIni = Absensi::whereDate('tanggal', now()->format('Y-m-d'))
             ->where('status', 'izin')->count();
         $sakitHariIni = Absensi::whereDate('tanggal', now()->format('Y-m-d'))
@@ -112,6 +112,52 @@ class AdminController extends Controller
         return back()->with('success', 'Status pengajuan berhasil diperbarui.');
     }
 
+    public function kehadiran(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->format('Y-m-d'));
+        
+        $absensi = Absensi::with('user')
+            ->whereDate('tanggal', $tanggal)
+            ->orderBy('jam_masuk')
+            ->get();
+            
+        // Jika ada peserta yang belum absen dan ini hari kerja (dan sudah lewat), mungkin tidak muncul di tabel ini
+        // Tetapi untuk saat ini kita tampilkan record yang ada di database.
+            
+        return view('admin.kehadiran', compact('absensi', 'tanggal'));
+    }
+
+    public function editKehadiran($id)
+    {
+        $absen = Absensi::with('user')->findOrFail($id);
+        return view('admin.kehadiran_edit', compact('absen'));
+    }
+
+    public function updateKehadiran(Request $request, $id)
+    {
+        $absen = Absensi::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:hadir,terlambat,izin,sakit,tidak_hadir,alpa',
+            'jam_masuk' => 'nullable|date_format:H:i',
+            'jam_pulang' => 'nullable|date_format:H:i',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $absen->status = $request->status;
+        
+        // Append seconds to time if provided
+        $absen->jam_masuk = $request->jam_masuk ? $request->jam_masuk . ':00' : null;
+        $absen->jam_pulang = $request->jam_pulang ? $request->jam_pulang . ':00' : null;
+        
+        $absen->keterangan = $request->keterangan;
+        $absen->source = 'admin';
+        
+        $absen->save();
+
+        return redirect()->route('admin.kehadiran')->with('success', 'Data kehadiran berhasil diperbarui.');
+    }
+
     private function getLaporanData($tipeFilter, $filterValue, $pesertaId = 'semua')
     {
         $queryPeserta = User::where('role', 'peserta')->orderBy('name');
@@ -144,8 +190,10 @@ class AdminController extends Controller
             $data[] = [
                 'peserta' => $p,
                 'hadir' => $absensi->where('status', 'hadir')->count(),
+                'terlambat' => $absensi->where('status', 'terlambat')->count(),
                 'izin' => $absensi->where('status', 'izin')->count(),
                 'sakit' => $absensi->where('status', 'sakit')->count(),
+                'tidak_hadir' => $absensi->where('status', 'tidak_hadir')->count(),
                 'alpa' => $absensi->where('status', 'alpa')->count(),
                 'total' => $absensi->count(),
             ];

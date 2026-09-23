@@ -27,6 +27,10 @@
             <i class="ph ph-envelope-open"></i>
             Pengajuan
         </a>
+        <a href="{{ route('admin.kehadiran') }}" class="student-nav-item {{ request()->routeIs('admin.kehadiran') ? 'active' : '' }}">
+            <i class="ph ph-clock-counter-clockwise"></i>
+            Manajemen Kehadiran
+        </a>
         <a href="{{ route('admin.laporan') }}" class="student-nav-item {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
             <i class="ph ph-file-text"></i>
             Laporan

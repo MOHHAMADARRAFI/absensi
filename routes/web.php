@@ -55,6 +55,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/peserta/{id}', [AdminController::class, 'updatePeserta'])->name('peserta.update');
 
     Route::post('/pengajuan/{id}/update', [AdminController::class, 'updatePengajuan'])->name('pengajuan.update');
+    
+    // Manajemen Kehadiran
+    Route::get('/kehadiran', [AdminController::class, 'kehadiran'])->name('kehadiran');
+    Route::get('/kehadiran/{id}/edit', [AdminController::class, 'editKehadiran'])->name('kehadiran.edit');
+    Route::put('/kehadiran/{id}', [AdminController::class, 'updateKehadiran'])->name('kehadiran.update');
+
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
     Route::get('/laporan/cetak', [AdminController::class, 'cetakLaporan'])->name('laporan.cetak');
 

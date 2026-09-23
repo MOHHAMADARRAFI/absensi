@@ -24,6 +24,7 @@ class Absensi extends Model
         'long_pulang',
         'jarak_masuk',
         'jarak_pulang',
+        'source',
     ];
 
     public function user()
