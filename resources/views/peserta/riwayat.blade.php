@@ -334,7 +334,7 @@
                                                 <span style="color: #F59E0B; text-transform: capitalize;">{{ $r->status }}</span>
                                             @endif
                                         </div>
-                                        @if($r->status == 'hadir')
+                                        @if($r->status == 'hadir' || $r->status == 'terlambat')
                                         <div class="tp-times">
                                             <div class="tp-time-box">
                                                 <span>Jam Masuk</span>
@@ -359,7 +359,7 @@
                                 </div>
 
                                 <div class="tp-content-box">
-                                    @if($r->status == 'hadir')
+                                    @if($r->status == 'hadir' || $r->status == 'terlambat')
                                         <div class="tp-content-title" style="display: flex; justify-content: space-between;">
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                 <i class="ph ph-notebook" style="font-size: 1.2rem; color: #059669;"></i> Laporan Kegiatan:
