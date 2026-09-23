@@ -2532,7 +2532,10 @@ th:last-child {
 /* Typography Adjustments for Dark Background */
 .student-brand strong { color: #ffffff !important; }
 .student-brand span { color: rgba(255, 255, 255, 0.7) !important; }
-.student-nav-item { color: rgba(255, 255, 255, 0.7) !important; }
+.student-nav-item { 
+    color: rgba(255, 255, 255, 0.7) !important; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
 .student-nav-item i { color: rgba(255, 255, 255, 0.7) !important; }
 
 /* Menu Hover & Active State */
@@ -2545,6 +2548,12 @@ th:last-child {
 }
 .student-nav-item:hover i, .student-nav-item.active i {
     color: #ffffff !important;
+}
+
+/* Click Animation (Scale down) */
+.student-nav-item:active {
+    transform: scale(0.95);
+    box-shadow: none;
 }
 
 /* Profile Card Layer - Glassmorphism */
@@ -2604,6 +2613,9 @@ th:last-child {
 .student-logout:hover {
     color: #ffffff !important;
     background: #ef4444 !important;
+}
+.student-logout:active {
+    transform: scale(0.95);
 }
 
 /* Ensure mobile menu toggle icon is visible on dark background */
