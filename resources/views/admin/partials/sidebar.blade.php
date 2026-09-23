@@ -23,6 +23,10 @@
             <i class="ph ph-users"></i>
             Data Peserta
         </a>
+        <a href="{{ route('admin.absensi-siswa') }}" class="student-nav-item {{ request()->routeIs('admin.absensi-siswa') ? 'active' : '' }}">
+            <i class="ph ph-identification-badge"></i>
+            Absensi Siswa
+        </a>
         <a href="{{ route('admin.pengajuan') }}" class="student-nav-item {{ request()->routeIs('admin.pengajuan') ? 'active' : '' }}">
             <i class="ph ph-envelope-open"></i>
             Pengajuan

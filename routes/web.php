@@ -58,6 +58,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     // Manajemen Kehadiran
     Route::get('/kehadiran', [AdminController::class, 'kehadiran'])->name('kehadiran');
+    Route::get('/absensi-siswa', [AdminController::class, 'absensiSiswa'])->name('absensi-siswa');
     Route::get('/kehadiran/{id}/edit', [AdminController::class, 'editKehadiran'])->name('kehadiran.edit');
     Route::put('/kehadiran/{id}', [AdminController::class, 'updateKehadiran'])->name('kehadiran.update');
 

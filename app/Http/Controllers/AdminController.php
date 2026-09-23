@@ -127,6 +127,18 @@ class AdminController extends Controller
         return view('admin.kehadiran', compact('absensi', 'tanggal'));
     }
 
+    public function absensiSiswa(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->format('Y-m-d'));
+        
+        $absensi = Absensi::with('user')
+            ->whereDate('tanggal', $tanggal)
+            ->orderBy('jam_masuk')
+            ->get();
+            
+        return view('admin.absensi_siswa', compact('absensi', 'tanggal'));
+    }
+
     public function editKehadiran($id)
     {
         $absen = Absensi::with('user')->findOrFail($id);
