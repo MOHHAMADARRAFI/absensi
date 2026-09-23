@@ -2463,3 +2463,148 @@ th:last-child {
         margin-left: auto;
     }
 }
+
+/* =======================================================
+   SIAP PKL SIDEBAR REDESIGN - GREEN GLASSMORPHISM
+   ======================================================= */
+
+.student-sidebar {
+    background-color: transparent !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Base layer 1: background & gradients */
+.student-sidebar::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px; 
+    height: 100vh;
+    background: 
+        /* Safe area bottom for Profile Card & Logout Button */
+        linear-gradient(to bottom, transparent 75%, rgba(2, 44, 34, 0.95) 90%, #022c22 100%),
+        /* Top slight abstract curve */
+        radial-gradient(ellipse at 0% 0%, rgba(20, 184, 166, 0.15) 0%, transparent 40%),
+        /* Center subtle gradient */
+        linear-gradient(to bottom, transparent 20%, rgba(15, 118, 110, 0.05) 50%, transparent 80%),
+        /* The main visual background requested by user */
+        url('../img/side-ijo.png') center/cover no-repeat,
+        /* Deep emerald gradient fallback */
+        linear-gradient(135deg, #064e3b 0%, #0f766e 100%);
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* Base layer 2: abstract decoration, glass shapes, dot patterns */
+.student-sidebar::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background:
+        /* Glass arc curve */
+        radial-gradient(ellipse 120% 50% at 100% 70%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 40%, transparent 41%),
+        /* Soft cyan/green glow accents */
+        radial-gradient(circle at -20% 40%, rgba(45, 212, 191, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 120% 60%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+        /* Subtle dot patterns on the bottom left and right */
+        url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%232DD4BF' fill-opacity='0.15'/%3E%3C/svg%3E");
+    /* Prevent decorations from cluttering the bottom safe area */
+    mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Foreground stacking context */
+.student-sidebar > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Typography Adjustments for Dark Background */
+.student-brand strong { color: #ffffff !important; }
+.student-brand span { color: rgba(255, 255, 255, 0.7) !important; }
+.student-nav-item { color: rgba(255, 255, 255, 0.7) !important; }
+.student-nav-item i { color: rgba(255, 255, 255, 0.7) !important; }
+
+/* Menu Hover & Active State */
+.student-nav-item:hover, .student-nav-item.active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+.student-nav-item:hover i, .student-nav-item.active i {
+    color: #ffffff !important;
+}
+
+/* Profile Card Layer - Glassmorphism */
+.student-sidebar-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+    padding: 1.25rem !important;
+    margin-top: auto !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 5;
+}
+.student-sidebar-footer form {
+    width: 100%;
+    margin: 0;
+}
+.student-sidebar-footer:hover {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.student-mini-profile {
+    width: 100%;
+}
+.student-mini-profile strong { color: #ffffff !important; }
+.student-mini-profile span { color: rgba(255, 255, 255, 0.6) !important; }
+.student-mini-profile .avatar { 
+    border: 2px solid rgba(255, 255, 255, 0.2) !important; 
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+/* Safest Area for Logout Button (Full Width, Under Profile) */
+.student-logout {
+    width: 100%;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    color: #fca5a5 !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 0.75rem !important;
+    transition: all 0.3s ease;
+}
+.student-logout::after {
+    content: 'Keluar';
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.student-logout:hover {
+    color: #ffffff !important;
+    background: #ef4444 !important;
+}
+
+/* Ensure mobile menu toggle icon is visible on dark background */
+.mobile-menu-toggle { color: white !important; }

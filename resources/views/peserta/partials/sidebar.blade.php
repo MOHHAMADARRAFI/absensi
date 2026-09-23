@@ -33,9 +33,6 @@
         </a>
     </nav>
 
-    <div class="sidebar-illustration">
-        <img src="{{ asset('img/sidebar-ill.png') }}" alt="Ilustrasi Kecamatan Cikampek">
-    </div>
 
     <div class="student-sidebar-footer">
         <div class="student-mini-profile">
