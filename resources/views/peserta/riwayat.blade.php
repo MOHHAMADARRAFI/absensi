@@ -151,6 +151,9 @@
         color: #475569;
         font-size: 0.95rem;
         line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
     
     .tp-footer {

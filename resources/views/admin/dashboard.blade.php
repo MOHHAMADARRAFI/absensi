@@ -2,6 +2,66 @@
 
 @section('title', 'Dashboard Admin - SIAP PKL')
 
+@push('styles')
+<style>
+    /* Modal Styles */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15, 23, 42, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+    }
+    .custom-modal-overlay.active { display: flex; }
+    .custom-modal {
+        background: white;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 500px;
+        padding: 1.5rem;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.2s;
+    }
+    .custom-modal-overlay.active .custom-modal {
+        transform: scale(1);
+        opacity: 1;
+    }
+    .custom-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #E2E8F0;
+    }
+    .custom-modal-title { font-weight: 700; font-size: 1.1rem; color: #1E293B; }
+    .custom-modal-close {
+        background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748B;
+    }
+    .custom-modal-close:hover { color: #0F172A; }
+    .custom-modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .custom-modal-footer {
+        display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;
+    }
+    
+    .keterangan-cell {
+        font-size: 0.8rem; color: #475569; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: color 0.2s;
+    }
+    .keterangan-cell:hover {
+        color: #2563EB;
+        text-decoration: underline;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="student-dashboard">
     {{-- Sidebar --}}
@@ -89,6 +149,7 @@
                                 <th>Masuk</th>
                                 <th>Pulang</th>
                                 <th>Status</th>
+                                <th>Keterangan/Laporan</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,10 +188,19 @@
                                         <span class="badge" style="background:#F1F5F9; color:#64748B; border: 1px solid #E2E8F0;">{{ ucfirst($absen->status) }}</span>
                                     @endif
                                 </td>
+                                <td>
+                                    @if($absen->keterangan)
+                                        <div class="keterangan-cell" title="Klik untuk melihat detail" onclick="openDetailModal(`{{ htmlspecialchars($absen->keterangan) }}`)">
+                                            {{ $absen->keterangan }}
+                                        </div>
+                                    @else
+                                        <div style="font-size: 0.8rem; color: #475569;">-</div>
+                                    @endif
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="text-center text-secondary" style="padding: 2.5rem;">
+                                <td colspan="6" class="text-center text-secondary" style="padding: 2.5rem;">
                                     <i class="ph ph-calendar-blank" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.3;"></i>
                                     Belum ada data presensi hari ini.
                                 </td>
@@ -144,4 +214,36 @@
         </div>
     </div>
 </div>
+
+<!-- Detail Modal -->
+<div class="custom-modal-overlay" id="detailModalOverlay">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <div class="custom-modal-title">Detail Keterangan/Laporan</div>
+            <button class="custom-modal-close" onclick="closeDetailModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="custom-modal-body">
+            <div id="detailKeteranganText" style="font-size: 0.95rem; line-height: 1.6; color: #475569; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;"></div>
+        </div>
+        <div class="custom-modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeDetailModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    function openDetailModal(text) {
+        // Decode HTML entities
+        let txt = document.createElement("textarea");
+        txt.innerHTML = text;
+        document.getElementById('detailKeteranganText').innerText = txt.value;
+        document.getElementById('detailModalOverlay').classList.add('active');
+    }
+
+    function closeDetailModal() {
+        document.getElementById('detailModalOverlay').classList.remove('active');
+    }
+</script>
+@endpush
 @endsection
