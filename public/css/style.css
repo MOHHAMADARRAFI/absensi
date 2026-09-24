@@ -251,11 +251,12 @@ textarea {
 
 /* Badges */
 .badge {
-    padding: 0.35rem 0.75rem;
+    padding: 0.4rem 0.85rem;
     border-radius: 9999px;
     font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.025em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
 
 .badge-success {
@@ -824,6 +825,18 @@ textarea {
 .student-main {
     flex: 1;
     min-width: 0;
+    position: relative;
+    isolation: isolate;
+    background-color: #f4fbff;
+    background-image: 
+        url('/img/bck-adm.png'),
+        radial-gradient(rgba(148, 163, 184, 0.12) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 10% 10%, rgba(204, 251, 241, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 90% 90%, rgba(219, 234, 254, 0.4) 0%, transparent 50%);
+    background-size: cover, 28px 28px, 100% 100%, 100% 100%;
+    background-position: center top, top left, top left, top left;
+    background-repeat: no-repeat, repeat, no-repeat, no-repeat;
+    min-height: 100vh;
 }
 
 .student-topbar {
@@ -832,8 +845,30 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #FFFFFF;
-    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.02);
+}
+
+.student-date-badge {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 4px 15px -3px rgba(15, 23, 42, 0.03) !important;
+    border-radius: 9999px !important;
+    padding: 0.6rem 1.25rem !important;
+    color: #334155 !important;
+    font-size: 0.875rem !important;
+}
+.student-date {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 15px -3px rgba(15, 23, 42, 0.03);
+    border-radius: 9999px;
+    padding: 0.6rem 1.25rem;
+    color: #334155;
+    font-size: 0.875rem;
 }
 
 .student-topbar h1 {
@@ -1797,18 +1832,72 @@ th:last-child {
 }
 
 .modern-card {
-    background: white;
-    border: 1px solid #E2E8F0;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 1.25rem;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.05), 0 4px 10px -5px rgba(15, 23, 42, 0.02);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.3), rgba(16, 185, 129, 0.3));
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .modern-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px);
-    border-color: #CBD5E1;
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08), 0 8px 15px -5px rgba(15, 23, 42, 0.04);
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.modern-card:hover::before {
+    opacity: 1;
+}
+
+/* Modern Card Table Enhancements */
+.modern-card.p-0 > div:first-child {
+    background: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5) !important;
+}
+.modern-card table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+.modern-card thead th {
+    background: rgba(248, 250, 252, 0.3) !important;
+    color: #64748B !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1.5rem !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6) !important;
+}
+.modern-card tbody tr {
+    transition: all 0.25s ease;
+}
+.modern-card tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: inset 3px 0 0 0 #3b82f6;
+}
+.modern-card tbody td {
+    padding: 1.25rem 1.5rem !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.4) !important;
+    vertical-align: middle;
+    background: transparent !important;
+}
+.modern-card tbody tr:last-child td {
+    border-bottom: none !important;
 }
 
 .activity-bar {
