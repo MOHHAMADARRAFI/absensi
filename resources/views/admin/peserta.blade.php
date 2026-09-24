@@ -73,8 +73,8 @@
                                 <td style="font-size: 0.875rem;">{{ $p->divisi ?? '-' }}</td>
                                 <td>
                                     @if($p->tgl_mulai && $p->tgl_selesai)
-                                    <div style="font-size: 0.8rem;">{{ date('d M Y', strtotime($p->tgl_mulai)) }}</div>
-                                    <div style="font-size: 0.8rem; color: #64748B;">s/d {{ date('d M Y', strtotime($p->tgl_selesai)) }}</div>
+                                    <div style="font-size: 0.8rem;">{{ \Carbon\Carbon::parse($p->tgl_mulai)->locale('id')->isoFormat('DD MMM YYYY') }}</div>
+                                    <div style="font-size: 0.8rem; color: #64748B;">s/d {{ \Carbon\Carbon::parse($p->tgl_selesai)->locale('id')->isoFormat('DD MMM YYYY') }}</div>
                                     @else
                                     <span class="text-secondary" style="font-size: 0.8rem;">-</span>
                                     @endif

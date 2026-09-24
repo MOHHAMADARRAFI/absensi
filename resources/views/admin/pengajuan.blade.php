@@ -83,10 +83,10 @@
                                 </td>
                                 <td style="font-size: 0.82rem;">
                                     @if($p->tanggal_mulai == $p->tanggal_selesai)
-                                        {{ date('d M Y', strtotime($p->tanggal_mulai)) }}
+                                        {{ \Carbon\Carbon::parse($p->tanggal_mulai)->locale('id')->isoFormat('DD MMM YYYY') }}
                                     @else
-                                        {{ date('d M Y', strtotime($p->tanggal_mulai)) }}<br>
-                                        <span class="text-secondary">s/d {{ date('d M Y', strtotime($p->tanggal_selesai)) }}</span>
+                                        {{ \Carbon\Carbon::parse($p->tanggal_mulai)->locale('id')->isoFormat('DD MMM YYYY') }}<br>
+                                        <span class="text-secondary">s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->locale('id')->isoFormat('DD MMM YYYY') }}</span>
                                     @endif
                                 </td>
                                 <td style="font-size: 0.82rem; max-width: 200px;">

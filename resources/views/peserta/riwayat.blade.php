@@ -289,7 +289,7 @@
             </div>
             <div class="student-date">
                 <i class="ph ph-calendar-blank"></i>
-                <span class="font-semibold">{{ date('l, d F Y') }}</span>
+                <span class="font-semibold">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</span>
             </div>
         </div>
 
@@ -315,7 +315,7 @@
                             <!-- Date on the left -->
                             <div class="timeline-page-date">
                                 <div class="day">{{ date('d', strtotime($r->tanggal)) }}</div>
-                                <div class="month">{{ date('M Y', strtotime($r->tanggal)) }}</div>
+                                <div class="month">{{ \Carbon\Carbon::parse($r->tanggal)->locale('id')->isoFormat('MMM YYYY') }}</div>
                             </div>
                             
                             <!-- Marker and Line -->

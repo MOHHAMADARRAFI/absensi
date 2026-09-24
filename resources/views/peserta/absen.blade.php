@@ -89,7 +89,7 @@
             </div>
             <div class="student-date">
                 <i class="ph ph-calendar-blank"></i>
-                <span class="font-semibold">{{ date('l, d F Y') }}</span>
+                <span class="font-semibold">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</span>
             </div>
         </div>
 
