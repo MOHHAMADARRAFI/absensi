@@ -2461,15 +2461,16 @@ th:last-child {
         left: 0;
         right: 0;
         z-index: 900;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        padding: 1rem 1.5rem !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
+        padding: 0.75rem 1.25rem !important;
         border-radius: 0 !important;
         margin: 0 !important;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .mobile-menu-toggle {
@@ -2506,9 +2507,15 @@ th:last-child {
     /* Fix Grids */
     .student-grid,
     .dashboard-stats,
-    .laporan-grid {
+    .laporan-grid,
+    .stat-grid,
+    .absensi-grid {
         grid-template-columns: 1fr !important;
         gap: 1rem;
+    }
+
+    .modern-card:not(.p-0) {
+        padding: 1rem !important;
     }
 
     .hero-card {
@@ -2536,9 +2543,21 @@ th:last-child {
     .table-container,
     .card-body {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .modern-card table {
+        white-space: nowrap;
     }
 
     /* Hide some info on mobile topbar */
+    .student-topbar h1 {
+        font-size: 1.1rem !important;
+    }
+    .student-eyebrow {
+        font-size: 0.65rem !important;
+    }
+
     .student-date .font-semibold {
         display: none;
         /* hide long text date */
@@ -2550,6 +2569,15 @@ th:last-child {
 
     .student-date {
         margin-left: auto;
+        padding: 0.5rem !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .student-date i {
+        font-size: 1.5rem !important;
+        color: var(--primary);
     }
 }
 
@@ -2709,3 +2737,43 @@ th:last-child {
 
 /* Ensure mobile menu toggle icon is visible on dark background */
 .mobile-menu-toggle { color: white !important; }
+
+/* =======================================================
+   CRITICAL MOBILE FIXES (OVERRIDING DESKTOP REDESIGN)
+   ======================================================= */
+@media (max-width: 992px) {
+    /* FORCE Sidebar to be fixed drawer on mobile */
+    .student-sidebar,
+    .sidebar {
+        position: fixed !important;
+        left: -320px !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        z-index: 1000 !important;
+        transition: left 0.3s ease !important;
+        height: 100vh !important;
+        width: 280px !important;
+    }
+
+    .student-sidebar.show,
+    .sidebar.show {
+        left: 0 !important;
+    }
+
+    /* Fix the sidebar background layer to slide with the drawer */
+    .student-sidebar::before,
+    .student-sidebar::after {
+        left: -320px !important;
+        transition: left 0.3s ease !important;
+    }
+    
+    .student-sidebar.show::before,
+    .student-sidebar.show::after {
+        left: 0 !important;
+    }
+    
+    /* Ensure the mobile toggle 'X' button is visible in the sidebar */
+    .student-brand .d-lg-none {
+        display: block !important;
+    }
+}
