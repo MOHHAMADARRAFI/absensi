@@ -2735,8 +2735,8 @@ th:last-child {
     transform: scale(0.95);
 }
 
-/* Ensure mobile menu toggle icon is visible on dark background */
-.mobile-menu-toggle { color: white !important; }
+/* Ensure mobile menu toggle icon is visible */
+.mobile-menu-toggle { color: var(--primary) !important; }
 
 /* =======================================================
    CRITICAL MOBILE FIXES (OVERRIDING DESKTOP REDESIGN)

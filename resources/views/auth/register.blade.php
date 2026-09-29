@@ -97,20 +97,10 @@
                     </div>
                 </div>
 
-                <button type="submit" style="width: 100%; background: #10B981; color: white; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s; margin-top: 0.5rem;">
+                <button type="submit" style="width: 100%; position: relative; background: #10B981; color: white; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; margin-top: 0.5rem;">
                     <span>Daftar Sekarang</span>
-                    <i class="ph ph-user-plus" style="font-size: 1.05rem; margin-left: auto; margin-right: 0;"></i>
+                    <i class="ph ph-user-plus" style="position: absolute; right: 1.25rem; font-size: 1.15rem;"></i>
                 </button>
-                <style>
-                    button[type="submit"] {
-                        justify-content: space-between !important;
-                    }
-                    button[type="submit"] span {
-                        margin-left: auto;
-                        margin-right: auto;
-                        transform: translateX(10px);
-                    }
-                </style>
 
                 <div class="text-center mt-3">
                     <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-bottom: 0;">
