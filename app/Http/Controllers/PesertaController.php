@@ -14,6 +14,10 @@ class PesertaController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Sinkronisasi data alpa untuk hari-hari sebelumnya yang terlewat
+        $user->syncAlpaRecords();
+
         $absensiHariIni = Absensi::where('user_id', $user->id)
             ->whereDate('tanggal', now()->format('Y-m-d'))
             ->first();
@@ -33,6 +37,8 @@ class PesertaController extends Controller
 
         return view('peserta.dashboard', compact('user', 'absensiHariIni', 'pengaturan', 'totalHadir', 'totalIzin'));
     }
+
+
 
     public function absenForm(Request $request)
     {
@@ -235,6 +241,8 @@ class PesertaController extends Controller
 
     public function riwayat(Request $request)
     {
+        Auth::user()->syncAlpaRecords();
+
         $riwayat = Absensi::where('user_id', Auth::id())
             ->orderBy('tanggal', 'desc')
             ->paginate(10);
@@ -256,6 +264,8 @@ class PesertaController extends Controller
 
     private function getLaporanData($tipeFilter, $filterValue)
     {
+        Auth::user()->syncAlpaRecords();
+
         $query = Absensi::where('user_id', Auth::id());
 
         if ($tipeFilter == 'hari') {

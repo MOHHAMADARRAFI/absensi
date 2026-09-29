@@ -98,8 +98,7 @@
                                 <th style="text-align: center; color: #d97706;">Terlambat</th>
                                 <th style="text-align: center; color: #0284c7;">Izin</th>
                                 <th style="text-align: center; color: #DC2626;">Sakit</th>
-                                <th style="text-align: center; color: #e11d48;">Tidak Hadir</th>
-                                <th style="text-align: center; color: #64748B;">Alpa</th>
+                                <th style="text-align: center; color: #e11d48;">Alpa</th>
                                 <th style="text-align: center;">% Kehadiran</th>
                             </tr>
                         </thead>
@@ -139,10 +138,7 @@
                                     <span style="font-weight: 700; color: #DC2626; font-size: 1rem;">{{ $item['sakit'] }}</span>
                                 </td>
                                 <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #e11d48; font-size: 1rem;">{{ $item['tidak_hadir'] }}</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <span style="font-weight: 700; color: #64748B; font-size: 1rem;">{{ $item['alpa'] }}</span>
+                                    <span style="font-weight: 700; color: #e11d48; font-size: 1rem;">{{ $item['tidak_hadir'] + $item['alpa'] }}</span>
                                 </td>
                                 <td style="text-align: center;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">

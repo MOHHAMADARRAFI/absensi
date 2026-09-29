@@ -131,7 +131,7 @@
                         <td class="text-center">{{ $item['hadir'] }}</td>
                         <td class="text-center">{{ $item['izin'] }}</td>
                         <td class="text-center">{{ $item['sakit'] }}</td>
-                        <td class="text-center">{{ $item['alpa'] }}</td>
+                        <td class="text-center">{{ $item['alpa'] + $item['tidak_hadir'] }}</td>
                         <td class="text-center">{{ $persen }}%</td>
                     </tr>
                 </tbody>
@@ -211,7 +211,7 @@
                     <td class="text-center">{{ $item['hadir'] }}</td>
                     <td class="text-center">{{ $item['izin'] }}</td>
                     <td class="text-center">{{ $item['sakit'] }}</td>
-                    <td class="text-center">{{ $item['alpa'] }}</td>
+                    <td class="text-center">{{ $item['alpa'] + $item['tidak_hadir'] }}</td>
                     <td class="text-center">{{ $persen }}%</td>
                 </tr>
                 @empty

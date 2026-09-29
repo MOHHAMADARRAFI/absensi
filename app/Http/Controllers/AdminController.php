@@ -12,7 +12,12 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $totalPeserta = User::where('role', 'peserta')->count();
+        $pesertas = User::where('role', 'peserta')->get();
+        foreach ($pesertas as $peserta) {
+            $peserta->syncAlpaRecords();
+        }
+
+        $totalPeserta = $pesertas->count();
         $hadirHariIni = Absensi::whereDate('tanggal', now()->format('Y-m-d'))
             ->whereIn('status', ['hadir', 'terlambat'])->count();
         $izinHariIni = Absensi::whereDate('tanggal', now()->format('Y-m-d'))
@@ -177,6 +182,11 @@ class AdminController extends Controller
             $queryPeserta->where('id', $pesertaId);
         }
         $peserta = $queryPeserta->get();
+        
+        foreach ($peserta as $p) {
+            $p->syncAlpaRecords();
+        }
+
         $data = [];
 
         foreach ($peserta as $p) {
