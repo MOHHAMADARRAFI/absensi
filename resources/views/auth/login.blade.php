@@ -47,20 +47,10 @@
                     @enderror
                 </div>
 
-                <button type="submit" style="width: 100%; background: #10B981; color: white; padding: 0.875rem 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem;">
+                <button type="submit" style="width: 100%; position: relative; background: #10B981; color: white; padding: 0.875rem 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem;">
                     <span>Masuk Sekarang</span>
-                    <i class="ph ph-arrow-right" style="font-size: 1.1rem; margin-left: auto; margin-right: 0;"></i>
+                    <i class="ph ph-arrow-right" style="position: absolute; right: 1.25rem; font-size: 1.2rem;"></i>
                 </button>
-                <style>
-                    button[type="submit"] {
-                        justify-content: space-between !important;
-                    }
-                    button[type="submit"] span {
-                        margin-left: auto;
-                        margin-right: auto;
-                        transform: translateX(10px);
-                    }
-                </style>
 
                 <div class="text-center mt-4">
                     <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;">
