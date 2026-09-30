@@ -69,3 +69,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/pengaturan', [AdminController::class, 'updatePengaturan'])->name('update_pengaturan');
     Route::post('/pengaturan/password', [AdminController::class, 'updatePassword'])->name('update_password');
 });
+
+// Route fallback untuk mengatasi error 404 pada foto saat menggunakan php artisan serve di Windows
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    
+    return response()->file($filePath);
+})->where('path', '.*');
