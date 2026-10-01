@@ -54,6 +54,21 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
                         <div class="form-group mb-0">
+                            <label class="form-label font-semibold text-secondary">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" class="form-control">
+                                <option value="" disabled>Pilih Jenis Kelamin</option>
+                                <option value="Laki-laki" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="Perempuan" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label font-semibold text-secondary">Tempat, Tanggal Lahir</label>
+                            <input type="text" name="tempat_tgl_lahir" class="form-control" value="{{ old('tempat_tgl_lahir', $peserta->tempat_tgl_lahir) }}" placeholder="Contoh: Jakarta, 01 Januari 2000">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group mb-0">
                             <label class="form-label font-semibold text-secondary">Asal Instansi / Sekolah</label>
                             <input type="text" name="sekolah_universitas" class="form-control" value="{{ old('sekolah_universitas', $peserta->sekolah_universitas) }}">
                         </div>

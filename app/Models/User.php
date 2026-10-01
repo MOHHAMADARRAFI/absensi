@@ -24,6 +24,8 @@ class User extends Authenticatable
         'nis_nim',
         'role',
         'sekolah_universitas',
+        'jenis_kelamin',
+        'tempat_tgl_lahir',
         'jurusan',
         'no_hp',
         'divisi',

@@ -73,6 +73,36 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="jenis_kelamin" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Jenis Kelamin</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-gender-intersex" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <select id="jenis_kelamin" name="jenis_kelamin" required 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s; appearance: none;">
+                                <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>Pilih Jenis Kelamin</option>
+                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                            <i class="ph ph-caret-down" style="position: absolute; right: 1rem; color: #1AC073; font-size: 1rem; pointer-events: none;"></i>
+                        </div>
+                        @error('jenis_kelamin')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tempat_tgl_lahir" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Tempat, Tgl Lahir</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <i class="ph ph-calendar-blank" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.15rem; z-index: 10;"></i>
+                            <input type="text" id="tempat_tgl_lahir" name="tempat_tgl_lahir" placeholder="Contoh: Jakarta, 01 Januari 2000" required value="{{ old('tempat_tgl_lahir') }}" 
+                                style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border-radius: 10px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.85rem; outline: none; transition: all 0.3s;">
+                        </div>
+                        @error('tempat_tgl_lahir')
+                            <div style="color: #F87171; font-size: 0.75rem; margin-top: 0.2rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="row mb-4">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <label for="password" style="display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem;">Password</label>

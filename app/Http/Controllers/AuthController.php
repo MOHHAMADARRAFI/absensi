@@ -49,6 +49,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'nis_nim' => 'required|string|max:50|unique:users',
             'sekolah_universitas' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tempat_tgl_lahir' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -57,6 +59,8 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'nis_nim' => $validated['nis_nim'],
             'sekolah_universitas' => $validated['sekolah_universitas'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'tempat_tgl_lahir' => $validated['tempat_tgl_lahir'],
             'password' => bcrypt($validated['password']),
             'role' => 'peserta',
             'status_aktif' => 'aktif',
