@@ -39,6 +39,10 @@
             <i class="ph ph-file-text"></i>
             Laporan
         </a>
+        <a href="{{ route('admin.sertifikat.index') }}" class="student-nav-item {{ request()->routeIs('admin.sertifikat.*') ? 'active' : '' }}">
+            <i class="ph ph-certificate"></i>
+            Sertifikat PKL
+        </a>
         <a href="{{ route('admin.pengaturan') }}" class="student-nav-item {{ request()->routeIs('admin.pengaturan') ? 'active' : '' }}">
             <i class="ph ph-gear"></i>
             Pengaturan

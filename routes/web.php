@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\SertifikatController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -64,6 +65,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
     Route::get('/laporan/cetak', [AdminController::class, 'cetakLaporan'])->name('laporan.cetak');
+
+    // Sertifikat Routes
+    Route::get('/sertifikat', [SertifikatController::class, 'index'])->name('sertifikat.index');
+    Route::get('/sertifikat/create', [SertifikatController::class, 'create'])->name('sertifikat.create');
+    Route::post('/sertifikat', [SertifikatController::class, 'store'])->name('sertifikat.store');
+    Route::get('/sertifikat/peserta/{id}', [SertifikatController::class, 'getPeserta'])->name('sertifikat.peserta');
+    Route::get('/sertifikat/{id}/pdf', [SertifikatController::class, 'downloadPdf'])->name('sertifikat.pdf');
+    Route::get('/sertifikat/{id}/show-pdf', [SertifikatController::class, 'showPdf'])->name('sertifikat.show-pdf');
 
     Route::get('/pengaturan', [AdminController::class, 'pengaturan'])->name('pengaturan');
     Route::post('/pengaturan', [AdminController::class, 'updatePengaturan'])->name('update_pengaturan');

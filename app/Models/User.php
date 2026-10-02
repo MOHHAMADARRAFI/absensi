@@ -110,4 +110,9 @@ class User extends Authenticatable
             $currentDate->addDay();
         }
     }
+
+    public function sertifikats()
+    {
+        return $this->hasMany(Sertifikat::class);
+    }
 }
