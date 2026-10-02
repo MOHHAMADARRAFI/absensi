@@ -76,6 +76,16 @@ class AdminController extends Controller
         return redirect()->route('admin.peserta')->with('success', 'Data peserta berhasil diperbarui.');
     }
 
+    public function destroyPeserta($id)
+    {
+        $peserta = User::where('role', 'peserta')->findOrFail($id);
+        
+        // Optional: you can delete related records like absensi or let DB cascade handle it
+        $peserta->delete();
+
+        return redirect()->route('admin.peserta')->with('success', 'Data peserta berhasil dihapus.');
+    }
+
     public function pengajuan()
     {
         $pengajuan = Pengajuan::with('user')->orderBy('created_at', 'desc')->get();

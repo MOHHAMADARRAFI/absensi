@@ -54,6 +54,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Edit Peserta
     Route::get('/peserta/{id}/edit', [AdminController::class, 'editPeserta'])->name('peserta.edit');
     Route::put('/peserta/{id}', [AdminController::class, 'updatePeserta'])->name('peserta.update');
+    Route::delete('/peserta/{id}', [AdminController::class, 'destroyPeserta'])->name('peserta.destroy');
 
     Route::post('/pengajuan/{id}/update', [AdminController::class, 'updatePengajuan'])->name('pengajuan.update');
     

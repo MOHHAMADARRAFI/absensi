@@ -96,7 +96,15 @@
                                             <i class="ph ph-pencil-simple"></i>
                                             Edit
                                         </a>
-
+                                        
+                                        <form action="{{ route('admin.peserta.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ addslashes($p->name) }}?');" style="display: inline-block; margin: 0;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; gap: 0.3rem; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;">
+                                                <i class="ph ph-trash"></i>
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
