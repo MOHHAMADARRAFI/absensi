@@ -166,7 +166,7 @@
                         </div>
                         
                         <!-- Presensi Pulang Card -->
-                        <div class="quick-card {{ (!$absensiHariIni || !$absensiHariIni->jam_masuk || $absensiHariIni->jam_pulang) ? 'disabled' : '' }}">
+                        <div class="quick-card {{ (!$absensiHariIni || !$absensiHariIni->jam_masuk || $absensiHariIni->jam_pulang || now()->format('H:i:s') < '14:50:00') ? 'disabled' : '' }}">
                             <div class="quick-icon-wrapper">
                                 <i class="ph ph-sign-out"></i>
                             </div>

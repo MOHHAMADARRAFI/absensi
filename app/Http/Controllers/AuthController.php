@@ -79,6 +79,37 @@ class AuthController extends Controller
         return redirect('/');
     }
 
+    public function showForgotPasswordForm()
+    {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole(Auth::user()->role);
+        }
+        return view('auth.forgot-password');
+    }
+
+    public function processForgotPassword(Request $request)
+    {
+        $request->validate([
+            'login' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nis_nim';
+
+        $user = \App\Models\User::where($loginField, $request->login)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'login' => 'Data pengguna dengan Email atau NIS/NIM tersebut tidak ditemukan.',
+            ])->onlyInput('login');
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan masuk menggunakan password baru.');
+    }
+
     private function redirectBasedOnRole($role)
     {
         if ($role === 'admin') {

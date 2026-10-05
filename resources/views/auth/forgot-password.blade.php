@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Login - SIAP PKL')
+@section('title', 'Lupa Password - SIAP PKL')
 
 @section('content')
 <div class="auth-wrapper" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: url('{{ asset('img/baackground-login.png') }}') center/cover no-repeat, linear-gradient(135deg, #064E33 0%, #032A1C 100%); font-family: 'Inter', sans-serif;">
@@ -15,17 +15,11 @@
     <div class="w-100" style="padding: 0 1rem; z-index: 10; display: flex; justify-content: center;">
         <div class="auth-form-card" style="width: 100%; max-width: 420px; background: #022516; padding: 2.5rem 2rem; border-radius: 1.5rem; border: 1px solid #144930; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
             <div class="mb-4 text-center" style="text-align: left !important;">
-                <h2 style="color: #ffffff; font-weight: 700; font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">Selamat Datang! <span style="font-size: 1.35rem;">👋</span></h2>
-                <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 1.5rem;">Masuk untuk melanjutkan aktivitas PKL - mu</p>
+                <h2 style="color: #ffffff; font-weight: 700; font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">Lupa Password <span style="font-size: 1.35rem;">🔐</span></h2>
+                <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 1.5rem;">Masukkan Email atau NIS/NIM beserta password baru Anda</p>
             </div>
 
-            @if(session('success'))
-                <div style="background-color: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; color: #10B981; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('forgot-password.process') }}">
                 @csrf
                 
                 <div class="form-group mb-3">
@@ -40,31 +34,38 @@
                     @enderror
                 </div>
 
-                <div class="form-group mb-4">
-                    <label for="password" style="display: block; font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Password</label>
+                <div class="form-group mb-3">
+                    <label for="password" style="display: block; font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Password Baru</label>
                     <div style="position: relative; display: flex; align-items: center;">
                         <i class="ph ph-lock" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.25rem; z-index: 10;"></i>
-                        <input type="password" id="password" name="password" placeholder="Masukkan Password" required 
+                        <input type="password" id="password" name="password" placeholder="Masukkan Password Baru" required 
                             style="width: 100%; padding: 0.875rem 3rem 0.875rem 3rem; border-radius: 12px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.9rem; outline: none; transition: all 0.3s;">
-                        <i class="ph ph-eye-slash" id="togglePassword" style="position: absolute; right: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10; cursor: pointer;"></i>
+                        <i class="ph ph-eye-slash toggle-password" data-target="password" style="position: absolute; right: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10; cursor: pointer;"></i>
                     </div>
                     @error('password')
                         <div style="color: #F87171; font-size: 0.8rem; margin-top: 0.25rem;"><i class="ph ph-warning-circle"></i> {{ $message }}</div>
                     @enderror
-                    <div style="text-align: right; margin-top: 0.5rem;">
-                        <a href="{{ route('forgot-password') }}" style="color: #10B981; font-size: 0.8rem; text-decoration: none;">Lupa password?</a>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="password_confirmation" style="display: block; font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">Konfirmasi Password Baru</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <i class="ph ph-lock-key" style="position: absolute; left: 1rem; color: #1AC073; font-size: 1.25rem; z-index: 10;"></i>
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi Password Baru" required 
+                            style="width: 100%; padding: 0.875rem 3rem 0.875rem 3rem; border-radius: 12px; border: 1px solid #144930; background: #011C10; color: #ffffff; font-size: 0.9rem; outline: none; transition: all 0.3s;">
+                        <i class="ph ph-eye-slash toggle-password" data-target="password_confirmation" style="position: absolute; right: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 1.25rem; z-index: 10; cursor: pointer;"></i>
                     </div>
                 </div>
 
                 <button type="submit" style="width: 100%; position: relative; background: #10B981; color: white; padding: 0.875rem 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem;">
-                    <span>Masuk Sekarang</span>
-                    <i class="ph ph-arrow-right" style="position: absolute; right: 1.25rem; font-size: 1.2rem;"></i>
+                    <span>Simpan Password Baru</span>
+                    <i class="ph ph-check-circle" style="position: absolute; right: 1.25rem; font-size: 1.2rem;"></i>
                 </button>
 
                 <div class="text-center mt-4">
                     <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;">
-                        Belum punya akun PKL? <br>
-                        <a href="{{ route('register') }}" style="color: #10B981; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 0.25rem;">Daftar sekarang</a>
+                        Ingat password Anda? <br>
+                        <a href="{{ route('login') }}" style="color: #10B981; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 0.25rem;">Kembali ke Login</a>
                     </p>
                 </div>
             </form>
@@ -77,19 +78,21 @@
 </div>
 
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function (e) {
-        const passwordInput = document.getElementById('password');
-        const icon = e.target;
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            icon.classList.remove('ph-eye-slash');
-            icon.classList.add('ph-eye');
-        } else {
-            passwordInput.type = 'password';
-            icon.classList.remove('ph-eye');
-            icon.classList.add('ph-eye-slash');
-        }
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+        icon.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.classList.remove('ph-eye-slash');
+                this.classList.add('ph-eye');
+            } else {
+                passwordInput.type = 'password';
+                this.classList.remove('ph-eye');
+                this.classList.add('ph-eye-slash');
+            }
+        });
     });
 </script>
 

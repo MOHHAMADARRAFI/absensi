@@ -99,7 +99,7 @@ class PesertaController extends Controller
 
         $pengaturan = Pengaturan::first();
         $jamMasuk = now()->format('H:i:s');
-        $jamBatas = $pengaturan->jam_masuk_batas ?? '08:00:00';
+        $jamBatas = $pengaturan->jam_masuk_batas ?? '08:15:00';
         $jamBatasTelat = '15:00:00';
 
         if ($jamMasuk >= $jamBatasTelat) {
@@ -170,6 +170,11 @@ class PesertaController extends Controller
 
         if ($absensi->jam_pulang) {
             return back()->with('error', 'Anda sudah melakukan absen pulang hari ini.');
+        }
+
+        $jamSekarang = now()->format('H:i:s');
+        if ($jamSekarang < '14:50:00') {
+            return back()->with('error', 'Belum waktunya absen pulang. Absen pulang baru bisa dilakukan mulai pukul 14:50 WIB.');
         }
 
         // Simpan foto
