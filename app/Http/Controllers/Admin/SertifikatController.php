@@ -118,4 +118,17 @@ class SertifikatController extends Controller
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('Sertifikat_PKL_' . $sertifikat->user->name . '.pdf');
     }
+
+    public function destroy($id)
+    {
+        $sertifikat = Sertifikat::findOrFail($id);
+
+        if ($sertifikat->file_pdf && Storage::disk('public')->exists($sertifikat->file_pdf)) {
+            Storage::disk('public')->delete($sertifikat->file_pdf);
+        }
+
+        $sertifikat->delete();
+
+        return redirect()->route('admin.sertifikat.index')->with('success', 'Sertifikat berhasil dihapus.');
+    }
 }

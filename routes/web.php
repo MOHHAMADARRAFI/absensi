@@ -76,6 +76,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/sertifikat/peserta/{id}', [SertifikatController::class, 'getPeserta'])->name('sertifikat.peserta');
     Route::get('/sertifikat/{id}/pdf', [SertifikatController::class, 'downloadPdf'])->name('sertifikat.pdf');
     Route::get('/sertifikat/{id}/show-pdf', [SertifikatController::class, 'showPdf'])->name('sertifikat.show-pdf');
+    Route::delete('/sertifikat/{id}', [SertifikatController::class, 'destroy'])->name('sertifikat.destroy');
 
     Route::get('/pengaturan', [AdminController::class, 'pengaturan'])->name('pengaturan');
     Route::post('/pengaturan', [AdminController::class, 'updatePengaturan'])->name('update_pengaturan');

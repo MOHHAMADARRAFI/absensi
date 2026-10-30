@@ -26,6 +26,20 @@
         </div>
 
         <div class="student-content">
+            @if(session('success'))
+                <div class="alert-success mb-4" style="padding: 0.85rem 1rem; border-radius: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+                    <i class="ph ph-check-circle" style="font-size: 1.25rem;"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert-danger mb-4" style="padding: 0.85rem 1rem; border-radius: 8px; background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+                    <i class="ph ph-warning-circle" style="font-size: 1.25rem;"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
             <div class="modern-card">
                 <div class="table-responsive" style="overflow-x: auto; width: 100%; white-space: nowrap;">
                     <table class="modern-table">
@@ -70,13 +84,20 @@
                                 <td><strong>{{ number_format($sertifikat->nilai_rata_rata, 2) }}</strong></td>
                                 <td>{{ \Carbon\Carbon::parse($sertifikat->tanggal_sertifikat)->format('d M Y') }}</td>
                                 <td>
-                                    <div class="action-buttons justify-end">
-                                        <a href="{{ route('admin.sertifikat.show-pdf', $sertifikat->id) }}" target="_blank" class="btn-action btn-view" title="Lihat PDF">
-                                            <i class="ph ph-eye"></i>
+                                    <div class="action-buttons justify-end" style="display: flex; align-items: center; justify-content: flex-end; gap: 0.4rem;">
+                                        <a href="{{ route('admin.sertifikat.show-pdf', $sertifikat->id) }}" target="_blank" class="btn" title="Lihat PDF" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; text-decoration: none;">
+                                            <i class="ph ph-eye" style="font-size: 1rem;"></i>
                                         </a>
-                                        <a href="{{ route('admin.sertifikat.pdf', $sertifikat->id) }}" class="btn-action btn-edit" title="Download PDF" style="background-color: #ECFDF5; color: #059669;">
-                                            <i class="ph ph-download-simple"></i>
+                                        <a href="{{ route('admin.sertifikat.pdf', $sertifikat->id) }}" class="btn" title="Download PDF" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background-color: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; text-decoration: none;">
+                                            <i class="ph ph-download-simple" style="font-size: 1rem;"></i>
                                         </a>
+                                        <form action="{{ route('admin.sertifikat.destroy', $sertifikat->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus sertifikat untuk {{ addslashes($sertifikat->user->name ?? 'peserta ini') }}?');" style="display: inline-block; margin: 0;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn" title="Hapus Sertifikat" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; cursor: pointer;">
+                                                <i class="ph ph-trash" style="font-size: 1rem;"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

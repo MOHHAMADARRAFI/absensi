@@ -16,13 +16,13 @@
             background: #ffffff;
         }
         
-        /* Container Page 1 & 2 */
+        /* Container Page 1 & 2 - Outer Dark Green Border */
         .sertifikat-container, .page-2-container {
             border: 4px solid #14532d; /* Deep Emerald Green */
             padding: 4px;
             position: relative;
-            height: 685px; /* Fits A4 Landscape */
-            box-sizing: border-box;
+            height: 672px; /* Fits A4 Landscape perfectly */
+            box-sizing: content-box;
             background: #ffffff;
         }
         .sertifikat-container {
@@ -31,10 +31,10 @@
         
         /* Gold Accent Middle Frame */
         .outer-border-accent {
-            border: 1.5px solid #d4af37; /* Royal Gold */
+            border: 2px solid #d4af37; /* Royal Gold */
             padding: 4px;
-            height: 671px;
-            box-sizing: border-box;
+            height: 660px; /* 672px - (4px*2 padding + 2px*2 border) = 660px */
+            box-sizing: content-box;
             position: relative;
         }
         
@@ -42,9 +42,9 @@
         .inner-border {
             border: 2px solid #14532d; /* Deep Emerald Green */
             padding: 15px 30px;
-            height: 657px;
+            height: 626px; /* 660px - (15px*2 padding + 2px*2 border) = 626px */
+            box-sizing: content-box;
             position: relative;
-            box-sizing: border-box;
         }
 
         /* Batik Corner Ornaments */
@@ -107,20 +107,32 @@
         }
         .signature {
             position: absolute;
-            bottom: 20px;
-            right: 40px;
+            bottom: 22px;
+            right: 45px;
             text-align: center;
             width: 300px;
             z-index: 3;
+            line-height: 1.25;
+        }
+        .signature-title {
+            font-weight: bold;
+            margin-top: 3px;
+            font-size: 15px;
+            letter-spacing: 0.5px;
         }
         .signature-name {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 0;
-            padding-bottom: 0;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+        .signature-meta {
+            font-size: 14px;
+            color: #111;
+            margin-top: 1px;
         }
         .signature-space {
-            height: 42px;
+            height: 44px;
         }
         
         /* Table Nilai (Page 2) */
@@ -221,19 +233,19 @@
 
                 <div class="content" style="text-align: center; width: 90%; margin: 8px auto 0 auto; line-height: 1.4;">
                     Praktek Kerja Lapangan (PKL) pada Kantor Camat Cikampek, terhitung tanggal 
-                    {{ $sertifikat->user && $sertifikat->user->tgl_mulai ? strtoupper(\Carbon\Carbon::parse($sertifikat->user->tgl_mulai)->translatedFormat('d F Y')) : '-' }}
+                    {{ $sertifikat->user && $sertifikat->user->tgl_mulai ? strtoupper(\Carbon\Carbon::parse($sertifikat->user->tgl_mulai)->locale('id')->isoFormat('D MMMM YYYY')) : '-' }}
                     sampai dengan 
-                    {{ $sertifikat->user && $sertifikat->user->tgl_selesai ? strtoupper(\Carbon\Carbon::parse($sertifikat->user->tgl_selesai)->translatedFormat('d F Y')) : '-' }} 
+                    {{ $sertifikat->user && $sertifikat->user->tgl_selesai ? strtoupper(\Carbon\Carbon::parse($sertifikat->user->tgl_selesai)->locale('id')->isoFormat('D MMMM YYYY')) : '-' }} 
                     dengan hasil = <strong>{{ $sertifikat->hasil_pkl }}</strong>=
                 </div>
 
                 <div class="signature">
-                    Cikampek, {{ \Carbon\Carbon::parse($sertifikat->tanggal_sertifikat)->translatedFormat('d F Y') }}<br>
-                    CAMAT CIKAMPEK
+                    <div>Cikampek, {{ \Carbon\Carbon::parse($sertifikat->tanggal_sertifikat)->locale('id')->isoFormat('D MMMM YYYY') }}</div>
+                    <div class="signature-title">CAMAT CIKAMPEK</div>
                     <div class="signature-space"></div>
                     <div class="signature-name">ADI FIRMANSYAH, S.H., M.M.</div>
-                    <div>Pembina</div>
-                    <div>NIP. 198406042002121001</div>
+                    <div class="signature-meta">Pembina</div>
+                    <div class="signature-meta">NIP. 198406042002121001</div>
                 </div>
             </div>
         </div>
@@ -311,12 +323,12 @@
                 </table>
 
                 <div class="signature">
-                    Cikampek, {{ \Carbon\Carbon::parse($sertifikat->tanggal_sertifikat)->translatedFormat('d F Y') }}<br>
-                    CAMAT CIKAMPEK
+                    <div>Cikampek, {{ \Carbon\Carbon::parse($sertifikat->tanggal_sertifikat)->locale('id')->isoFormat('D MMMM YYYY') }}</div>
+                    <div class="signature-title">CAMAT CIKAMPEK</div>
                     <div class="signature-space"></div>
                     <div class="signature-name">ADI FIRMANSYAH, S.H., M.M.</div>
-                    <div>Pembina</div>
-                    <div>NIP. 198406042002121001</div>
+                    <div class="signature-meta">Pembina</div>
+                    <div class="signature-meta">NIP. 198406042002121001</div>
                 </div>
             </div>
         </div>
