@@ -6,15 +6,15 @@
     <title></title>
     <style>
         @page {
-            size: auto;
-            margin: 0;
+            size: A4 portrait;
+            margin: 15mm 12mm 15mm 12mm;
         }
         body {
             font-family: Arial, sans-serif;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.4;
             margin: 0;
-            padding: 15mm 12mm;
+            padding: 0;
         }
         .header {
             text-align: center;
@@ -62,9 +62,15 @@
         .signature-area {
             margin-top: 60px;
         }
+        thead {
+            display: table-header-group;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
         @media print {
             body { 
-                padding: 15mm 12mm; 
+                padding: 0; 
                 margin: 0;
             }
             .no-print { display: none !important; }

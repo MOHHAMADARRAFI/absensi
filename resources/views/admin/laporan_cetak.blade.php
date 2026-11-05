@@ -6,8 +6,8 @@
     <title></title>
     <style>
         @page {
-            size: auto;
-            margin: 0;
+            size: A4 portrait;
+            margin: 15mm 12mm 15mm 12mm;
         }
         * {
             box-sizing: border-box;
@@ -15,61 +15,67 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             color: #1e293b;
-            line-height: 1.5;
+            line-height: 1.4;
             margin: 0;
-            padding: 15mm 12mm;
-            font-size: 13px;
+            padding: 0;
+            font-size: 12px;
             background: #fff;
         }
         .header {
             text-align: center;
             border-bottom: 2px solid #0f172a;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
+            padding-bottom: 10px;
+            margin-bottom: 14px;
         }
         .header h1 {
             margin: 0;
-            font-size: 20px;
+            font-size: 18px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #0f172a;
         }
         .header p {
-            margin: 4px 0 0;
-            font-size: 13px;
+            margin: 3px 0 0;
+            font-size: 12px;
             color: #475569;
         }
         .info-section {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .info-table {
             width: 100%;
             border-collapse: collapse;
             border: none !important;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .info-table td {
             border: none !important;
-            padding: 3px 0;
-            font-size: 13px;
+            padding: 2px 0;
+            font-size: 12px;
             vertical-align: top;
         }
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 16px;
-            font-size: 12px;
+            margin-bottom: 14px;
+            font-size: 11px;
+            page-break-inside: auto;
+        }
+        table.data-table thead {
+            display: table-header-group;
         }
         table.data-table, table.data-table th, table.data-table td {
             border: 1px solid #334155;
         }
         table.data-table th, table.data-table td {
-            padding: 7px 8px;
+            padding: 5px 6px;
             text-align: left;
             vertical-align: top;
         }
         table.data-table th {
-            background-color: #f1f5f9;
+            background-color: #f1f5f9 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
             font-weight: bold;
             text-align: center;
             color: #0f172a;
@@ -79,13 +85,13 @@
         .font-bold { font-weight: bold; }
         
         .section-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-transform: uppercase;
             color: #0f172a;
-            margin: 14px 0 8px 0;
+            margin: 12px 0 6px 0;
             border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
 
         .status-badge {
@@ -99,7 +105,7 @@
         .status-alpa { color: #dc2626; }
         
         .footer {
-            margin-top: 25px;
+            margin-top: 20px;
             width: 100%;
             display: flex;
             justify-content: flex-end;
@@ -111,7 +117,7 @@
         }
         .signature-box p { margin: 2px 0; }
         .signature-space {
-            margin-top: 55px;
+            margin-top: 50px;
         }
         
         .page-break {
@@ -126,10 +132,15 @@
         }
         @media print {
             body { 
-                padding: 15mm 12mm; 
+                padding: 0; 
                 margin: 0;
             }
             .no-print { display: none !important; }
+            table.data-table th {
+                background-color: #f1f5f9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
