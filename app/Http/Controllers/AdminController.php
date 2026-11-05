@@ -214,10 +214,15 @@ class AdminController extends Controller
                 }
             } else {
                 // default bulan
-                $query->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$filterValue]);
+                $filterVal = trim($filterValue);
+                if (preg_match('/^(\d{4})-(\d{2})$/', $filterVal, $matches)) {
+                    $query->whereYear('tanggal', $matches[1])->whereMonth('tanggal', $matches[2]);
+                } else {
+                    $query->whereRaw("DATE_FORMAT(tanggal, '%Y-%m') = ?", [$filterVal]);
+                }
             }
 
-            $absensi = $query->get();
+            $absensi = $query->orderBy('tanggal', 'asc')->get();
 
             $data[] = [
                 'peserta' => $p,
@@ -228,6 +233,7 @@ class AdminController extends Controller
                 'tidak_hadir' => $absensi->where('status', 'tidak_hadir')->count(),
                 'alpa' => $absensi->where('status', 'alpa')->count(),
                 'total' => $absensi->count(),
+                'detail_absensi' => $absensi,
             ];
         }
         return $data;
