@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Laporan Kehadiran & Kegiatan</title>
+    <title></title>
     <style>
         @page {
-            size: A4 portrait;
-            margin: 15mm 12mm 15mm 12mm;
+            size: auto;
+            margin: 0;
         }
         * {
             box-sizing: border-box;
@@ -17,7 +17,7 @@
             color: #1e293b;
             line-height: 1.5;
             margin: 0;
-            padding: 15px;
+            padding: 15mm 12mm;
             font-size: 13px;
             background: #fff;
         }
@@ -125,7 +125,10 @@
             page-break-inside: avoid;
         }
         @media print {
-            body { padding: 0; }
+            body { 
+                padding: 15mm 12mm; 
+                margin: 0;
+            }
             .no-print { display: none !important; }
         }
     </style>
@@ -261,7 +264,7 @@
             <div class="footer">
                 <div class="signature-box">
                     <p>Cikampek, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') }}</p>
-                    <p style="margin-top: 5px;">Mentor SIAP PKL,</p>
+                    <p style="margin-top: 5px;">Mentor,</p>
                     <div class="signature-space">
                         <p><strong>_______________________</strong></p>
                     </div>
@@ -355,7 +358,7 @@
         <div class="footer">
             <div class="signature-box">
                 <p>Cikampek, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') }}</p>
-                <p style="margin-top: 5px;">Mentor SIAP PKL,</p>
+                <p style="margin-top: 5px;">Mentor,</p>
                 <div class="signature-space">
                     <p><strong>_______________________</strong></p>
                 </div>

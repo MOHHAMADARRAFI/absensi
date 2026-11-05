@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Laporan Kehadiran Pribadi</title>
+    <title></title>
     <style>
+        @page {
+            size: auto;
+            margin: 0;
+        }
         body {
             font-family: Arial, sans-serif;
             color: #333;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 15mm 12mm;
         }
         .header {
             text-align: center;
@@ -59,8 +63,11 @@
             margin-top: 60px;
         }
         @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
+            body { 
+                padding: 15mm 12mm; 
+                margin: 0;
+            }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
