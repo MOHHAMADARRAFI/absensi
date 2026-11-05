@@ -65,6 +65,10 @@ class User extends Authenticatable
         if (!$this->tgl_mulai) return;
 
         $tglMulai = \Carbon\Carbon::parse($this->tgl_mulai)->startOfDay();
+        $tanggalSistemMulai = \Carbon\Carbon::parse(Absensi::SYSTEM_START_DATE)->startOfDay();
+        if ($tglMulai->lt($tanggalSistemMulai)) {
+            $tglMulai = $tanggalSistemMulai;
+        }
         $hariIni = \Carbon\Carbon::now('Asia/Jakarta');
         
         $tglSelesai = $this->tgl_selesai ? \Carbon\Carbon::parse($this->tgl_selesai)->endOfDay() : null;

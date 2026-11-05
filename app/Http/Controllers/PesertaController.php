@@ -271,7 +271,8 @@ class PesertaController extends Controller
     {
         Auth::user()->syncAlpaRecords();
 
-        $query = Absensi::where('user_id', Auth::id());
+        $query = Absensi::where('user_id', Auth::id())
+            ->excludePreLaunchAlpa();
 
         if ($tipeFilter == 'hari') {
             $query->whereDate('tanggal', $filterValue);
