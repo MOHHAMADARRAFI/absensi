@@ -200,7 +200,8 @@ class AdminController extends Controller
         $data = [];
 
         foreach ($peserta as $p) {
-            $query = Absensi::where('user_id', $p->id);
+            $query = Absensi::where('user_id', $p->id)
+                ->excludePreLaunchAlpa();
 
             if ($tipeFilter == 'hari') {
                 $query->whereDate('tanggal', $filterValue);

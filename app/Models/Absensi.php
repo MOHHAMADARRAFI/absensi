@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Absensi extends Model
 {
     use HasFactory;
+
+    public const SYSTEM_START_DATE = '2026-10-01';
 
     protected $fillable = [
         'user_id',
@@ -26,6 +29,19 @@ class Absensi extends Model
         'jarak_pulang',
         'source',
     ];
+
+    public function scopeExcludePreLaunchAlpa(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+            $query->whereDate('tanggal', '>=', self::SYSTEM_START_DATE)
+                ->orWhere(function (Builder $query) {
+                    $query->where(function (Builder $query) {
+                        $query->whereNull('source')
+                            ->orWhere('source', '!=', 'system');
+                    })->orWhere('status', '!=', 'alpa');
+                });
+        });
+    }
 
     public function user()
     {
